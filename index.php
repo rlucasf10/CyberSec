@@ -575,6 +575,21 @@ require_once INCLUDES_PATH . '/header.php';
 <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
 
+<!-- AOS (Animate On Scroll) CSS y JS -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Inicialización de AOS
+    document.addEventListener('DOMContentLoaded', function () {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+    });
+</script>
+
 <?php
 // Incluir pie de página
 require_once INCLUDES_PATH . '/footer.php';

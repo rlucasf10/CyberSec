@@ -8,8 +8,8 @@
 $db_config = [
     'host' => 'localhost',
     'dbname' => 'cybersec_db',
-    'user' => 'root',      // Cambiar por un usuario con privilegios limitados en producción
-    'password' => '',      // Cambiar por una contraseña segura en producción
+    'user' => 'riky',      // Cambiar por un usuario con privilegios limitados en producción
+    'password' => '4578',      // Cambiar por una contraseña segura en producción
     'charset' => 'utf8mb4',
     'options' => [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

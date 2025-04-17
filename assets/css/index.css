@@ -1,16 +1,3 @@
-/* Variables globales */
-:root {
-  --primary-color: #0d6efd;
-  --secondary-color: #6c757d;
-  --accent-color: #ff4500;
-  --dark-color: #212529;
-  --light-color: #f8f9fa;
-  --gradient-start: #0d6efd;
-  --gradient-end: #0099ff;
-  --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-  --transition: all 0.3s ease-in-out;
-}
-
 /* Estilos generales */
 body {
   overflow-x: hidden;
@@ -19,15 +6,19 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(
-    to right,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
+  background: linear-gradient(to right, #0059b3, #1a75ff);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: transparent;
+  -webkit-text-fill-color: transparent;
+  color: #0059b3; /* Color de respaldo para navegadores que no soportan gradientes */
+}
+
+@supports not (background-clip: text) {
+  .text-gradient {
+    background: transparent;
+    -webkit-text-fill-color: initial;
+    color: #0059b3;
+  }
 }
 
 .section-title {
@@ -39,8 +30,8 @@ body {
 .section-badge {
   display: inline-block;
   padding: 0.25rem 1rem;
-  background-color: rgba(13, 110, 253, 0.1);
-  color: var(--primary-color);
+  background-color: rgba(66, 153, 225, 0.1);
+  color: #4299e1;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 50px;
@@ -66,7 +57,7 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
+  background-color: #f8f9fa;
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -77,7 +68,7 @@ body {
 }
 
 .section-separator span i {
-  color: var(--primary-color);
+  color: #4299e1;
 }
 
 /* Preloader */
@@ -87,7 +78,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--dark-color);
+  background-color: #0a192f;
   z-index: 9999;
   display: flex;
   justify-content: center;
@@ -107,7 +98,7 @@ body {
 }
 
 .loading-text {
-  color: white;
+  color: #ffffff;
   margin-top: 1rem;
   font-size: 1rem;
   letter-spacing: 2px;
@@ -425,7 +416,7 @@ body {
 
 /* Alerta de ciberseguridad */
 .cybersecurity-alert {
-  background-color: rgba(13, 110, 253, 0.1);
+  background-color: rgba(18, 32, 54, 0.95);
   border-left: 5px solid var(--primary-color);
   padding: 12px 0;
   overflow: hidden;
@@ -437,8 +428,8 @@ body {
 }
 
 .alert-badge {
-  background-color: var(--primary-color);
-  color: white;
+  background-color: #dc3545;
+  color: #ffffff;
   padding: 5px 10px;
   border-radius: 4px;
   font-weight: 600;
@@ -450,6 +441,7 @@ body {
 .alert-text {
   flex: 1;
   overflow: hidden;
+  color: #ffffff;
 }
 
 .ticker-wrapper {
@@ -460,7 +452,7 @@ body {
 .ticker-item {
   white-space: nowrap;
   padding: 0 50px;
-  color: var(--text-color);
+  color: #ffffff;
   font-weight: 500;
 }
 
@@ -475,7 +467,7 @@ body {
 
 .alert-link {
   margin-left: 15px;
-  color: var(--primary-color);
+  color: #4299e1;
   font-weight: 600;
   white-space: nowrap;
   text-decoration: none;
@@ -483,13 +475,14 @@ body {
 }
 
 .alert-link:hover {
-  text-decoration: underline;
+  color: #63b3ed;
 }
 
 /* Servicios */
 .services-section {
   position: relative;
   padding: 80px 0;
+  background-color: #f8f9fa;
 }
 
 .service-card {
@@ -500,6 +493,7 @@ body {
   transition: var(--transition);
   position: relative;
   z-index: 1;
+  background: rgba(18, 32, 54, 0.95);
 }
 
 .service-card-bg {
@@ -530,17 +524,13 @@ body {
 .service-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
+  background: rgba(66, 153, 225, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   margin: 0 auto 20px;
-  color: white;
+  color: #4299e1;
   font-size: 1.8rem;
   box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
   transition: var(--transition);
@@ -554,6 +544,8 @@ body {
   position: relative;
   overflow: hidden;
   transition: var(--transition);
+  color: #4299e1 !important;
+  border-color: #4299e1;
 }
 
 .service-btn::after {
@@ -576,9 +568,17 @@ body {
   left: 100%;
 }
 
+.service-card .h4 {
+  color: #ffffff;
+}
+
+.service-card .card-text.text-muted {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
 /* Contadores */
 .counter-section {
-  background-color: var(--dark-color);
+  background: linear-gradient(135deg, #0a192f, #1a365d);
   color: white;
   position: relative;
   padding: 80px 0;
@@ -597,21 +597,19 @@ body {
 .counter-item {
   text-align: center;
   padding: 20px;
+  position: relative;
+  z-index: 2;
 }
 
 .counter-value {
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 700;
   margin-bottom: 10px;
-  background: linear-gradient(
-    to right,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  background: none;
+  -webkit-background-clip: initial;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+  color: #ffffff;
   display: inline-block;
 }
 
@@ -619,6 +617,7 @@ body {
   font-size: 1.1rem;
   font-weight: 500;
   margin: 0;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Testimonios */
@@ -853,9 +852,10 @@ body {
   border: 3px solid rgba(255, 255, 255, 0.2);
 }
 
-.btn-outline-primary {
+/*.btn-outline-primary {
   background: rgba(0, 136, 255, 0.7);
 }
+*/
 
 /* Estilos para la sección "Confían en Nosotros" */
 .clients-section {
@@ -990,4 +990,148 @@ body {
 /* Ajuste del tamaño para acomodar el texto */
 .client-logo {
   height: 130px;
+}
+
+/* Correcciones de contraste para index.css */
+
+/* Hero Section */
+.hero-section .text-muted,
+.hero-section .card-text.text-muted {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Servicios */
+.service-card {
+  background: rgba(18, 32, 54, 0.95);
+}
+
+.service-card .card-text.text-muted {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.service-card .h4 {
+  color: #ffffff;
+}
+
+/* Sección de servicios */
+.services-section {
+  background-color: #f8f9fa;
+}
+
+.services-section .section-title {
+  color: #1a202c;
+}
+
+.services-section .lead {
+  color: #2d3748;
+}
+
+/* Alertas de ciberseguridad */
+.cybersecurity-alert {
+  background: rgba(18, 32, 54, 0.95);
+}
+
+.alert-text {
+  color: #ffffff;
+}
+
+.alert-badge {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+/* Botones y enlaces */
+.btn-outline-primary {
+  color: #4299e1;
+  border-color: #4299e1;
+}
+
+.btn-outline-primary:hover {
+  background-color: #4299e1;
+  color: #ffffff;
+}
+
+.service-btn {
+  color: #4299e1 !important;
+  border-color: #4299e1;
+}
+
+.service-btn:hover {
+  background-color: #4299e1 !important;
+  color: #ffffff !important;
+}
+
+/* Iconos de servicio */
+.service-icon {
+  color: #4299e1;
+  background: rgba(66, 153, 225, 0.1);
+}
+
+/* Trust indicators */
+.trust-text {
+  color: #ffffff;
+}
+
+.trust-icon i.text-success {
+  color: #48bb78 !important;
+}
+
+/* Section badge */
+.section-badge {
+  background-color: rgba(66, 153, 225, 0.1);
+  color: #4299e1;
+}
+
+/* Texto gradiente */
+.text-gradient {
+  background: linear-gradient(to right, #0059b3, #1a75ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #0059b3; /* Color de respaldo para navegadores que no soportan gradientes */
+}
+
+@supports not (background-clip: text) {
+  .text-gradient {
+    background: transparent;
+    -webkit-text-fill-color: initial;
+    color: #0059b3;
+  }
+}
+
+/* Separadores de sección */
+.section-separator span {
+  background-color: #f8f9fa;
+}
+
+.section-separator span i {
+  color: #4299e1;
+}
+
+/* Corrección para textos sobre fondos claros */
+.services-section .section-badge {
+  color: #4299e1;
+  background-color: rgba(66, 153, 225, 0.1);
+}
+
+/* Corrección para el preloader */
+#preloader {
+  background-color: #0a192f;
+}
+
+#preloader .loading-text {
+  color: #ffffff;
+}
+
+/* Ajustes para el ticker de alertas */
+.ticker-item {
+  color: #ffffff;
+}
+
+.alert-link {
+  color: #4299e1;
+}
+
+.alert-link:hover {
+  color: #63b3ed;
 }

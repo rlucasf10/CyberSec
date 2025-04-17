@@ -7,10 +7,8 @@ if (!defined('ACCESO_PERMITIDO')) {
 // Incluir archivo de inicialización
 require_once dirname(__DIR__) . '/includes/init.php';
 
-// Determinar qué CSS y JS cargar según la página actual
+// Determinar página actual y versión de caché
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
-
-// Generar un valor de versión para evitar caché
 $version = time();
 ?>
 <!DOCTYPE html>
@@ -25,33 +23,26 @@ $version = time();
     <!-- Título dinámico de la página -->
     <title><?php echo isset($page_title) ? $page_title . ' | ' . APP_NAME : APP_NAME . ' - Ciberseguridad'; ?></title>
 
-    <!-- Favicon -->
-    <link rel="icon" href="<?php echo IMG_URL; ?>favicon.ico" type="image/x-icon">
-
-    <!-- Meta tags SEO -->
-    <meta name="description"
-        content="Servicios profesionales de ciberseguridad y hacking ético para empresas y organizaciones">
-    <meta name="keywords" content="ciberseguridad, hacking ético, penetration testing, seguridad informática">
-
-    <!-- Bootstrap CSS -->
+    <!-- Recursos comunes -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <!-- CSS personalizado -->
-    <link rel="stylesheet" href="<?php echo CSS_URL; ?>header_footer.css?v=<?php echo $version; ?>">
+    <!-- AOS (Animate On Scroll) CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <?php if ($current_page === 'index'): ?>
-        <link rel="stylesheet" href="<?php echo CSS_URL; ?>index.css?v=<?php echo $version; ?>">
+    <!-- CSS Base -->
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/header_footer.css?v=<?php echo $version; ?>">
+
+    <!-- CSS específico de la página -->
+    <?php if (file_exists(ASSETS_PATH . "/css/{$current_page}.css")): ?>
+        <link rel="stylesheet"
+            href="<?php echo BASE_URL; ?>assets/css/<?php echo $current_page; ?>.css?v=<?php echo $version; ?>">
     <?php endif; ?>
 </head>
 
 <body>
-    <!-- Header principal con efecto cyberpunk -->
+    <!-- Header común -->
     <header class="header">
         <div class="container">
             <nav class="navbar navbar-expand-lg">
@@ -62,10 +53,9 @@ $version = time();
                 </a>
 
                 <!-- Botón para menú móvil -->
-                <button class="navbar-toggler" type="button" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon">
-                        <i class="fas fa-bars"></i>
-                    </span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <!-- Menú principal -->
@@ -77,11 +67,40 @@ $version = time();
                                 <i class="fas fa-home me-1"></i>Inicio
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?php echo $current_page === 'servicios' ? 'active' : ''; ?>"
-                                href="<?php echo BASE_URL; ?>servicios.php">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle <?php echo $current_page === 'servicios' || strpos($current_page, 'servicios/') === 0 ? 'active' : ''; ?>"
+                                href="<?php echo BASE_URL; ?>servicios.php" id="navbarDropdownServicios" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fas fa-cogs me-1"></i>Servicios
                             </a>
+                            <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownServicios">
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>servicios/pentesting.php">
+                                        <i class="fas fa-bug me-2"></i>Pentesting
+                                    </a></li>
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>servicios/auditoria.php">
+                                        <i class="fas fa-clipboard-check me-2"></i>Auditoría de Seguridad
+                                    </a></li>
+                                <li><a class="dropdown-item"
+                                        href="<?php echo BASE_URL; ?>servicios/respuesta-incidentes.php">
+                                        <i class="fas fa-fire-extinguisher me-2"></i>Respuesta a Incidentes
+                                    </a></li>
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>servicios/consultoria.php">
+                                        <i class="fas fa-user-shield me-2"></i>Consultoría Especializada
+                                    </a></li>
+                                <li><a class="dropdown-item"
+                                        href="<?php echo BASE_URL; ?>servicios/analisis-vulnerabilidades.php">
+                                        <i class="fas fa-search me-2"></i>Análisis de Vulnerabilidades
+                                    </a></li>
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>servicios/formacion.php">
+                                        <i class="fas fa-graduation-cap me-2"></i>Formación
+                                    </a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>servicios.php">
+                                        <i class="fas fa-list-ul me-2"></i>Todos los servicios
+                                    </a></li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo $current_page === 'blog' ? 'active' : ''; ?>"
@@ -117,7 +136,6 @@ $version = time();
         </div>
     </header>
 
-    <!-- Contenido principal -->
     <main class="main-content">
         <!-- Notificaciones -->
         <?php if (isset($_SESSION['mensaje'])): ?>
@@ -154,6 +172,3 @@ $version = time();
 
         <!-- Aquí comienza el contenido específico de cada página -->
     </main>
-</body>
-
-</html>

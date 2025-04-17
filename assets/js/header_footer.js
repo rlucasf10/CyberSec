@@ -8,13 +8,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Elementos principales
   const header = document.querySelector('.header')
-  const navbarToggler = document.querySelector('.navbar-toggler')
-  const navbarCollapse = document.querySelector('.navbar-collapse')
   const backToTopButton = document.getElementById('back-to-top')
   const navLinks = document.querySelectorAll('.nav-link')
 
   // Detección inicial del scroll
   handleHeaderScroll()
+
+  /**
+   * Inicialización de AOS (Animate On Scroll)
+   */
+  if (typeof AOS !== 'undefined') {
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true,
+      mirror: false
+    })
+  }
 
   /**
    * Control del scroll para efectos en el header
@@ -37,62 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }, 10)
     }
   })
-
-  /**
-   * Menú móvil - Botón de hamburguesa
-   * Solución al problema de abrir/cerrar
-   */
-  if (navbarToggler) {
-    // Simple función para toggle del menú
-    navbarToggler.addEventListener('click', function (e) {
-      // Prevenir comportamiento por defecto
-      e.preventDefault()
-
-      // Toggle de clases para mostrar/ocultar
-      this.classList.toggle('active')
-      navbarCollapse.classList.toggle('show')
-
-      // Control del scroll del body
-      document.body.style.overflow = navbarCollapse.classList.contains('show')
-        ? 'hidden'
-        : ''
-    })
-  }
-
-  /**
-   * Efectos de partículas para fondo (opcional, si se añade la librería)
-   */
-  function initParticles () {
-    if (typeof particlesJS !== 'undefined') {
-      const containers = document.querySelectorAll('.particles-bg')
-      containers.forEach(container => {
-        particlesJS(container.id, {
-          particles: {
-            number: { value: 80, density: { enable: true, value_area: 800 } },
-            color: { value: '#00aaff' },
-            opacity: { value: 0.5, random: true },
-            size: { value: 3, random: true },
-            line_linked: {
-              enable: true,
-              distance: 150,
-              color: '#33ff99',
-              opacity: 0.4,
-              width: 1
-            },
-            move: {
-              enable: true,
-              speed: 2,
-              direction: 'none',
-              random: true,
-              straight: false,
-              out_mode: 'out',
-              bounce: false
-            }
-          }
-        })
-      })
-    }
-  }
 
   /**
    * Botón "Volver arriba"
@@ -169,25 +123,6 @@ document.addEventListener('DOMContentLoaded', function () {
   highlightActiveMenuItem()
 
   /**
-   * Efectos de typing para elementos con clase .typed-text
-   */
-  function initTypingEffects () {
-    if (typeof Typed !== 'undefined') {
-      const typedElements = document.querySelectorAll('.typed-text')
-      typedElements.forEach(element => {
-        const strings = element.getAttribute('data-strings').split(',')
-        new Typed(element, {
-          strings: strings,
-          typeSpeed: 50,
-          backSpeed: 30,
-          backDelay: 2000,
-          loop: true
-        })
-      })
-    }
-  }
-
-  /**
    * Efecto hover para botones con clase .cyber-glow-effect
    */
   function initGlowEffects () {
@@ -232,11 +167,82 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
+  /**
+   * Gestión del menú móvil con Bootstrap 5
+   * Esta función se asegura de que el menú móvil funcione correctamente
+   * sin interferir con las funciones nativas de Bootstrap
+   */
+  function setupMobileMenu () {
+    // Obtener elementos después de que Bootstrap los haya inicializado
+    const navbarToggler = document.querySelector('.navbar-toggler')
+    const navbarCollapse = document.querySelector('.navbar-collapse')
+    const dropdownMenus = document.querySelectorAll('.dropdown-menu')
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle')
+
+    // Asegurar que los links dentro de dropdowns cierren el menú en móvil
+    const dropdownLinks = document.querySelectorAll(
+      '.dropdown-menu .dropdown-item'
+    )
+    dropdownLinks.forEach(link => {
+      link.addEventListener('click', function () {
+        if (window.innerWidth < 992) {
+          // Si estamos en móvil, cerrar el menú principal
+          const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse)
+          if (bsCollapse) {
+            bsCollapse.hide()
+          }
+        }
+      })
+    })
+
+    // Soporte para click fuera para cerrar el menú en móvil
+    document.addEventListener('click', function (e) {
+      if (window.innerWidth < 992) {
+        // Si el menú está abierto y hacemos clic fuera
+        const isMenuOpen = navbarCollapse.classList.contains('show')
+        const isClickInside =
+          navbarCollapse.contains(e.target) || navbarToggler.contains(e.target)
+
+        if (isMenuOpen && !isClickInside) {
+          const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse)
+          if (bsCollapse) {
+            bsCollapse.hide()
+          }
+        }
+      }
+    })
+
+    // Mejorar experiencia de hover/clic en dropdowns según el dispositivo
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      // Es un dispositivo táctil, asegurarnos que los dropdowns funcionen con un toque
+      if (window.innerWidth >= 992) {
+        // Solo para tamaños de escritorio, en móvil Bootstrap ya lo maneja
+        dropdownToggles.forEach(toggle => {
+          toggle.addEventListener('click', function (e) {
+            // Permitir navegación al hacer clic en el enlace principal en escritorio táctil
+            if (!e.target.classList.contains('dropdown-toggle')) {
+              window.location.href = toggle.getAttribute('href')
+            }
+          })
+        })
+      }
+    }
+  }
+
   // Inicializar todos los efectos
   initGlowEffects()
-  initParticles()
-  initTypingEffects()
   setupAlerts()
+
+  // Iniciar manejo del menú móvil después de que Bootstrap esté completamente cargado
+  setTimeout(setupMobileMenu, 100)
+
+  // Actualizar configuración en redimensionamiento
+  window.addEventListener('resize', function () {
+    // Reiniciar configuración del menú móvil si cambia el tamaño
+    if (typeof bootstrap !== 'undefined') {
+      setupMobileMenu()
+    }
+  })
 
   // Indicador de página cargada
   document.body.classList.add('page-loaded')

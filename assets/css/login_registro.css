@@ -1,0 +1,427 @@
+/* Estilos para las páginas de login y registro con tema ciberseguridad */
+
+/* Contenedor de partículas para efecto de fondo */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(135deg, #0a192f 0%, #162a46 100%);
+}
+
+/* Preloader - igual que en index */
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a192f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#preloader .loader {
+  text-align: center;
+}
+
+#preloader .shield-icon {
+  font-size: 50px;
+  margin-bottom: 20px;
+  color: #4299e1;
+  animation: pulse 1.5s infinite;
+}
+
+#preloader .loading-text {
+  color: #fff;
+  letter-spacing: 3px;
+  font-size: 16px;
+}
+
+#preloader .dots {
+  animation: dots 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes dots {
+  0%,
+  20% {
+    content: ".";
+  }
+  40% {
+    content: "..";
+  }
+  60% {
+    content: "...";
+  }
+  80%,
+  100% {
+    content: "";
+  }
+}
+
+/* Página específica - Contenedor principal */
+.main-content .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Tarjeta de autenticación con efecto glassmorphism */
+.auth-card,
+.card.shadow-lg {
+  border: none;
+  border-radius: 15px;
+  padding: 2.5rem;
+  background: rgba(18, 32, 54, 0.8);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(66, 153, 225, 0.3);
+}
+
+.auth-card::before,
+.card.shadow-lg::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(66, 153, 225, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Encabezado de la tarjeta */
+.card-body .fas {
+  margin-bottom: 1rem;
+  display: inline-block;
+  background: linear-gradient(135deg, #4299e1, #667eea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 15px rgba(102, 126, 234, 0.5));
+}
+
+.card-body h2 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  background: linear-gradient(to right, #4299e1, #667eea);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-body p.text-muted {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+}
+
+/* Estilos para los campos de formulario */
+.main-content .form-label {
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.main-content .form-control,
+.main-content .form-select {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(66, 153, 225, 0.3);
+  color: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.main-content .form-control:focus,
+.main-content .form-select:focus {
+  background-color: rgba(30, 41, 59, 0.9);
+  border-color: #4299e1;
+  box-shadow: 0 0 0 0.25rem rgba(66, 153, 225, 0.25);
+  color: #fff;
+}
+
+.main-content .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.main-content .input-group-text {
+  background-color: rgba(36, 48, 66, 0.9);
+  border: 1px solid rgba(66, 153, 225, 0.3);
+  color: #4299e1;
+}
+
+/* Efectos específicos de las páginas de login/registro - Sin afectar botones globales */
+.shadow-pulse {
+  animation: shadowPulse 2s infinite;
+}
+
+@keyframes shadowPulse {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 136, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 136, 255, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 136, 255, 0.5);
+  }
+}
+
+/* Elementos flotantes - adaptados del index */
+.main-content .floating-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.main-content .float-1,
+.main-content .float-2,
+.main-content .float-3 {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(66, 153, 225, 0.2) 0%,
+    rgba(102, 126, 234, 0.05) 70%,
+    transparent 100%
+  );
+}
+
+.main-content .float-1 {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  right: -150px;
+}
+
+.main-content .float-2 {
+  width: 200px;
+  height: 200px;
+  bottom: -100px;
+  left: -100px;
+}
+
+.main-content .float-3 {
+  width: 150px;
+  height: 150px;
+  bottom: 50px;
+  right: 50px;
+}
+
+/* Scroll indicator - adaptado del index */
+.main-content .scroll-indicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.8;
+}
+
+.main-content .mouse {
+  width: 30px;
+  height: 50px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.main-content .wheel {
+  height: 10px;
+  width: 3px;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: block;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  animation: mouse-wheel 1.5s ease infinite;
+}
+
+.main-content .scroll-arrow {
+  display: block;
+  margin-top: 5px;
+}
+
+.main-content .scroll-arrow span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+  border-right: 2px solid rgba(255, 255, 255, 0.7);
+  transform: rotate(45deg);
+  margin: -5px;
+  animation: mouse-scroll 1.5s infinite;
+}
+
+.main-content .scroll-arrow span:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.main-content .scroll-arrow span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.main-content .scroll-arrow span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes mouse-wheel {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes mouse-scroll {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Estilos para enlaces dentro del contenido de login/registro */
+.main-content .forgot-password {
+  font-size: 0.875rem;
+  color: #4299e1;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.main-content .forgot-password:hover {
+  color: #667eea;
+}
+
+/* Estilos para checkbox */
+.main-content .form-check-input {
+  background-color: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(66, 153, 225, 0.5);
+}
+
+.main-content .form-check-input:checked {
+  background-color: #4299e1;
+  border-color: #4299e1;
+}
+
+/* Estilos para mensajes de alerta */
+.main-content .alert {
+  background-color: rgba(30, 41, 59, 0.9);
+  border-left: 4px solid;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.main-content .alert-danger {
+  border-left-color: #e53e3e;
+}
+
+.main-content .alert-success {
+  border-left-color: #38a169;
+}
+
+.main-content .alert-warning {
+  border-left-color: #d69e2e;
+}
+
+/* Personalización del botón mostrar/ocultar contraseña */
+.main-content .toggle-password {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  background-color: rgba(36, 48, 66, 0.9);
+  border: 1px solid rgba(66, 153, 225, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.main-content .toggle-password:hover {
+  background-color: rgba(42, 55, 76, 0.9);
+  color: #fff;
+}
+
+/* Indicador de fortaleza de contraseña */
+.main-content .password-strength {
+  margin-top: 0.5rem;
+}
+
+.main-content .password-strength .progress {
+  height: 4px;
+  background-color: rgba(30, 41, 59, 0.5);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Colores para los niveles de fortaleza */
+.main-content .strength-weak .progress-bar {
+  background-color: #e53e3e;
+}
+
+.main-content .strength-medium .progress-bar {
+  background-color: #d69e2e;
+}
+
+.main-content .strength-strong .progress-bar {
+  background-color: #38a169;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .main-content .auth-card,
+  .main-content .card.shadow-lg {
+    padding: 1.5rem;
+  }
+
+  .main-content .auth-title,
+  .main-content .card-body h2 {
+    font-size: 1.5rem;
+  }
+
+  .main-content .floating-element {
+    display: none;
+  }
+}

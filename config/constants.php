@@ -29,13 +29,17 @@ define('LOGS_PATH', BASE_PATH . '/logs');
 // URLs base
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
 $domainName = $_SERVER['HTTP_HOST'];
-$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
 
-define('BASE_URL', $protocol . $domainName . $basePath . '/');
+// Obtener la ruta base del proyecto
+$projectPath = dirname($_SERVER['SCRIPT_FILENAME']);
+$projectName = 'CyberSec'; // Nombre de tu carpeta de proyecto
+$baseDir = '/' . $projectName;
+
+define('BASE_URL', $protocol . $domainName . $baseDir . '/');
 define('ASSETS_URL', BASE_URL . 'assets/');
-define('CSS_URL', ASSETS_URL . 'css/');
-define('JS_URL', ASSETS_URL . 'js/');
-define('IMG_URL', ASSETS_URL . 'img/');
+define('CSS_URL', BASE_URL . 'assets/css/');
+define('JS_URL', BASE_URL . 'assets/js/');
+define('IMG_URL', BASE_URL . 'assets/img/');
 
 // Configuración de la base de datos
 define('DB_HOST', 'localhost');

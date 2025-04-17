@@ -1,6 +1,5 @@
 /* 
  * CyberSec - Estilos de Header y Footer
- * Diseño espectacular con temática cyberpunk/ciberseguridad
  */
 
 /* Variables globales */
@@ -53,7 +52,7 @@ html {
 }
 
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "Poppins", sans-serif;
   color: var(--text-color);
   line-height: 1.6;
   background-color: #121212;
@@ -167,6 +166,104 @@ img {
   align-items: center;
 }
 
+/* Estilos para el menú desplegable */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 260px;
+  margin-top: 0;
+  padding: 10px 0;
+  background: rgba(10, 26, 47, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(51, 255, 153, 0.2);
+  border-radius: 5px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 15px rgba(51, 255, 153, 0.15);
+  z-index: 1000;
+  transform: translateY(15px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+/* Para escritorio: mostrar/ocultar con hover */
+@media (min-width: 992px) {
+  .dropdown-menu {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+/* Para móvil: mostrar/ocultar con clases .show */
+.dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background: rgba(51, 255, 153, 0.1);
+  color: var(--secondary-color);
+}
+
+.dropdown-item i {
+  margin-right: 10px;
+  color: var(--secondary-color);
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-item:hover i {
+  transform: translateX(3px);
+}
+
+.dropdown-divider {
+  height: 1px;
+  margin: 8px 0;
+  background: linear-gradient(
+    90deg,
+    rgba(51, 255, 153, 0) 0%,
+    rgba(51, 255, 153, 0.3) 50%,
+    rgba(51, 255, 153, 0) 100%
+  );
+  border: none;
+}
+
+/* Efecto para el ícono del dropdown toggle */
+.dropdown-toggle::after {
+  content: "\f107";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  border: none;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.dropdown:hover .dropdown-toggle::after {
+  transform: rotate(180deg);
+}
+
 .nav-link {
   display: flex;
   align-items: center;
@@ -227,41 +324,20 @@ img {
   transform: translateY(-2px);
 }
 
-/* Botón del menú móvil */
+/* Botón del menú móvil - simplificado al máximo */
 .navbar-toggler {
-  background: transparent;
-  border: none;
-  width: 40px;
-  height: 40px;
-  position: relative;
-  padding: 0;
-  cursor: pointer;
-  z-index: 1031;
-  display: none;
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .navbar-toggler:focus {
-  outline: none;
   box-shadow: none;
+  outline: none;
 }
 
+/* Estilo básico para el ícono del toggler */
 .navbar-toggler-icon {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.navbar-toggler .navbar-toggler-icon i {
-  color: var(--text-color);
-  font-size: 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.navbar-toggler.active .navbar-toggler-icon i {
-  color: var(--secondary-color);
-  transform: rotate(90deg);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
 /* Botones de acción */
@@ -279,8 +355,8 @@ img {
 }
 
 .btn-outline-primary {
-  color: white;
-  border: 2px solid rgba(0, 136, 255, 0.7);
+  color: #4299e1;
+  border: 2px solid #4299e1;
   background: rgba(0, 136, 255, 0.1);
 }
 
@@ -453,6 +529,49 @@ img {
   .btn-primary {
     width: 100%;
     justify-content: center;
+  }
+
+  /* Estilos para menú desplegable en móvil */
+  .dropdown-menu {
+    position: static !important;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-top: 0;
+    display: none;
+    padding: 0 !important;
+    margin-left: 1rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+
+  .dropdown-menu.show {
+    display: block !important;
+    max-height: 500px;
+    transition: max-height 0.5s ease-in;
+  }
+
+  .navbar .dropdown > .dropdown-toggle::after {
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+  }
+
+  .navbar .dropdown.show > .dropdown-toggle::after {
+    transform: rotate(180deg);
+  }
+
+  /* Mejorar estilo de los elementos del dropdown */
+  .dropdown-menu .dropdown-item {
+    color: rgba(255, 255, 255, 0.85) !important;
+    padding: 0.5rem 1rem !important;
+  }
+
+  .dropdown-menu .dropdown-item:hover,
+  .dropdown-menu .dropdown-item:focus {
+    background-color: rgba(0, 136, 204, 0.2) !important;
+    color: white !important;
   }
 }
 

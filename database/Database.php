@@ -9,9 +9,9 @@ class Database
     private $conn;
 
     private $host = 'localhost';
-    private $db_name = 'ciberseguridad';
-    private $username = 'root';
-    private $password = '';
+    private $db_name = 'cybersec_db';
+    private $username = 'riky';
+    private $password = '4578';
 
     /**
      * Constructor privado para evitar instanciación directa
