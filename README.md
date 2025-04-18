@@ -1,74 +1,111 @@
-# Base de Datos para Empresa de Ciberseguridad y Pentesting
+# Base de Datos — Empresa de Ciberseguridad y Pentesting
 
-Este directorio contiene los archivos relacionados con la base de datos de la empresa de consultoría en ciberseguridad y pentesting.
+Este proyecto contiene la base de datos y archivos relacionados con la gestión de una empresa de consultoría en ciberseguridad y pentesting.
 
-## Estructura de la Base de Datos
+## 📦 Estructura del Proyecto
 
-La base de datos `cybersec_db` está diseñada para gestionar todos los aspectos operativos de una empresa de ciberseguridad:
+```
+/cybersec-app
+│
+├── /public                  # Archivos accesibles públicamente
+│   ├── index.php            # Página principal
+│   ├── login.php            # Página de inicio de sesión
+│   ├── register.php         # Página de registro
+│   ├── /css                 # Estilos CSS
+│   │   ├── style.css        # Estilos generales
+│   │   ├── login.css        # Estilos del login
+│   │   └── register.css     # Estilos del registro
+│
+├── /includes
+│   ├── header.php           # Cabecera común
+│   └── footer.php           # Pie de página común
+│
+├── /config
+│   └── database.php         # Configuración y conexión a la base de datos
+│
+├── /sql
+│   ├── estructura.sql       # Script con la estructura de la base de datos
+│   ├── procedimientos.sql   # Procedimientos almacenados
+│   └── datos_prueba.sql     # (Opcional) Datos de ejemplo
+│
+├── .env                     # Variables de entorno (DB, claves, etc.)
+├── README.md                # Documentación del proyecto
+└── .htaccess                # Reescritura de URLs (si se usa en Apache)
+```
 
-### Entidades Principales:
+## 🧠 Estructura de la Base de Datos
 
-1. **Clientes**: Información completa de los clientes corporativos e individuales.
-2. **Empleados/Consultores**: Datos de los profesionales que trabajan en la empresa.
-3. **Proyectos**: Gestión detallada de los proyectos de ciberseguridad.
-4. **Servicios**: Catálogo de servicios ofrecidos por la empresa.
-5. **Vulnerabilidades**: Registro de vulnerabilidades descubiertas en los proyectos.
-6. **Activos**: Inventario de los activos tecnológicos evaluados.
-7. **Informes**: Documentación generada para los clientes.
-8. **Herramientas**: Registro de las herramientas utilizadas en los proyectos.
-9. **Finanzas**: Gestión de facturas y pagos.
-10. **Formaciones**: Cursos y capacitaciones ofrecidas a clientes.
-11. **Base de Conocimiento**: Repositorio de información técnica.
+La base de datos `cybersec_db` incluye las siguientes tablas principales:
 
-## Características Principales
+- **usuarios**: Manejo de accesos (cliente, empleado o admin).
+- **clientes**: Información corporativa de los clientes.
+- **empleados**: Datos del personal técnico.
+- **proyectos**: Información de proyectos activos e históricos.
+- **servicios**: Servicios de ciberseguridad ofrecidos.
+- **proyecto_servicio**: Relación entre proyectos y servicios contratados.
+- **vulnerabilidades**: Registro de vulnerabilidades encontradas.
 
-- **Integridad referencial**: Todas las relaciones están protegidas con claves foráneas.
-- **Campos de auditoría**: Las tablas incluyen campos para seguimiento de cambios.
-- **Enumeraciones**: Uso de tipos ENUM para garantizar consistencia de datos.
-- **Índices optimizados**: Índices en campos clave para mejorar el rendimiento.
+## ⚙️ Instalación
 
-## Instrucciones de Instalación
-
-Para instalar la base de datos:
-
-1. Asegúrate de tener MySQL instalado (versión 5.7 o superior recomendada).
-2. Ejecuta el script `cybersec_db.sql`:
+1. Asegúrate de tener MySQL instalado (versión 5.7+ o MariaDB).
+2. Crea la base de datos e importa la estructura:
 
 ```bash
-mysql -u [usuario] -p < cybersec_db.sql
+mysql -u tu_usuario -p < sql/estructura.sql
 ```
 
-## Modelo de Relaciones
+3. Importa los procedimientos almacenados:
 
-Las principales relaciones en la base de datos son:
+```bash
+mysql -u tu_usuario -p < sql/procedimientos.sql
+```
 
-- Un cliente puede tener múltiples proyectos.
-- Un proyecto puede tener múltiples servicios, empleados, vulnerabilidades e informes.
-- Los empleados pueden estar asignados a múltiples proyectos.
-- Las vulnerabilidades están asociadas a un proyecto específico.
-- Los activos están vinculados a proyectos concretos.
+4. (Opcional) Carga datos de ejemplo para pruebas:
 
-## Consideraciones de Seguridad
+```bash
+mysql -u tu_usuario -p < sql/datos_prueba.sql
+```
 
-- Esta base de datos debe estar protegida con medidas de seguridad robustas:
-  - Acceso limitado y auditado
-  - Cifrado de datos sensibles
-  - Copias de seguridad regulares
-  - Monitorización de actividad
+## 🔁 Relaciones Clave
 
-## Mantenimiento
+- Un **usuario** puede ser un cliente, empleado o administrador.
+- Un **cliente** puede tener varios proyectos.
+- Un **proyecto** puede tener múltiples servicios y vulnerabilidades.
+- Un **empleado** puede estar asignado a múltiples proyectos.
 
-Se recomienda realizar backups diarios de esta base de datos y revisar regularmente su rendimiento mediante:
+## 🔐 Buenas Prácticas de Seguridad
+
+- Acceso limitado a la base de datos por roles.
+- Cifrado de contraseñas con hash y salt.
+- Campos `token_recuperacion` y `fecha_token` para recuperación segura.
+- Auditoría: uso de campos `creado`, `actualizado`, `bloqueado`.
+
+## 🛠️ Mantenimiento Recomendado
+
+- Realizar backups automáticos y regulares.
+- Monitorizar rendimiento y optimizar tablas:
 
 ```sql
-OPTIMIZE TABLE [nombre_tabla];
-ANALYZE TABLE [nombre_tabla];
+OPTIMIZE TABLE nombre_tabla;
 ```
 
-## Extensiones Futuras
+- Analizar el estado de las tablas:
 
-La estructura está diseñada para ser extensible. Posibles adiciones futuras:
-- Integraciones con herramientas de escaneo automatizado
-- Módulo de inteligencia de amenazas
-- Sistema de gestión de cumplimiento normativo
-- Dashboard de KPIs y métricas 
+```sql
+ANALYZE TABLE nombre_tabla;
+```
+
+## 📌 Archivos Relevantes
+
+- `estructura.sql`: Define la estructura de la base de datos.
+- `procedimientos.sql`: Procedimientos almacenados útiles (crear usuario, login, gestión de proyectos, etc.).
+- `datos_prueba.sql`: Datos iniciales de prueba (si aplica).
+
+## 🚀 Futuras Extensiones
+
+- Panel de control para usuarios y administración.
+- Sistema de notificaciones de seguridad.
+- Dashboard de KPIs en ciberseguridad.
+- Soporte para integraciones con herramientas como Nessus, Burp Suite, etc.
+
+© Ricardo Lucas Fernández — Proyecto CyberSecApp

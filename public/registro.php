@@ -2,27 +2,24 @@
 // Definir constante para permitir acceso a archivos de configuración
 define('ACCESO_PERMITIDO', true);
 
-// Incluir archivo de constantes
-require_once __DIR__ . '/../config/constants.php';
-
-// Incluir archivo de inicialización
-require_once INCLUDES_PATH . '/init.php';
+// Incluir archivo de configuración
+require_once dirname(__DIR__) . '/config/config.php';
 
 // Título de la página
 $page_title = "Registro de Usuario";
 
 // Si el usuario ya está autenticado, redirigir a index
 if (isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL);
+    header("Location: " . BASE_URL . "public/index.php");
     exit;
 }
 
 // Incluir encabezado
-require_once INCLUDES_PATH . '/header.php';
+require_once BASE_PATH . '/views/plantillas/header.php';
 ?>
 
 <!-- Estilos personalizados -->
-<link rel="stylesheet" href="<?php echo CSS_URL; ?>login_registro.css">
+<link rel="stylesheet" href="<?php echo htmlspecialchars(BASE_URL . 'public/css/login_registro.css'); ?>">
 
 <!-- Partículas de fondo para efectos visuales -->
 <div id="particles-js" class="particles-container"></div>
@@ -36,14 +33,15 @@ require_once INCLUDES_PATH . '/header.php';
                     <div class="text-center mb-4">
                         <i class="fas fa-user-plus fa-3x text-primary mb-3 animate__animated animate__fadeInDown"></i>
                         <h2 class="fw-bold animate__animated animate__fadeInUp">Crear Cuenta</h2>
-                        <p class="text-muted animate__animated animate__fadeInUp animate__delay-1s">Únete a nuestra
+                        <p class="text-light animate__animated animate__fadeInUp animate__delay-1s">Únete a nuestra
                             plataforma de ciberseguridad</p>
                     </div>
 
                     <!-- Formulario de registro -->
                     <form id="registroForm"
-                        action="<?php echo BASE_URL; ?>controllers/auth_controller.php?action=register" method="post"
-                        class="needs-validation animate__animated animate__fadeInUp animate__delay-2s" novalidate>
+                        action="<?php echo htmlspecialchars(BASE_URL . 'controllers/auth_controller.php?action=register'); ?>"
+                        method="post" class="needs-validation animate__animated animate__fadeInUp animate__delay-2s"
+                        novalidate>
                         <!-- Campo oculto para token CSRF -->
                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION[CSRF_TOKEN_NAME]; ?>">
 
@@ -129,7 +127,7 @@ require_once INCLUDES_PATH . '/header.php';
                         <div class="row">
                             <!-- Contraseña -->
                             <div class="col-md-6 mb-4">
-                                <label for="password" class="form-label">Contraseña</label>
+                                <label for="password" class="form-label text-white">Contraseña</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                     <input type="password" class="form-control" id="password" name="password"
@@ -139,12 +137,32 @@ require_once INCLUDES_PATH . '/header.php';
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
+                                <div class="password-strength mt-2">
+                                    <div class="progress" style="height: 5px;">
+                                        <div class="progress-bar" role="progressbar" style="width: 0%;"
+                                            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                    <small class="password-feedback text-white mt-1">La contraseña debe tener al menos
+                                        10 caracteres</small>
+                                </div>
+                                <div class="password-requirements small text-white mt-1">
+                                    <div class="req-length"><i class="fas fa-circle me-1"></i> Mínimo 10 caracteres
+                                    </div>
+                                    <div class="req-upper"><i class="fas fa-circle me-1"></i> Al menos una mayúscula
+                                    </div>
+                                    <div class="req-lower"><i class="fas fa-circle me-1"></i> Al menos una minúscula
+                                    </div>
+                                    <div class="req-number"><i class="fas fa-circle me-1"></i> Al menos un número</div>
+                                    <div class="req-special"><i class="fas fa-circle me-1"></i> Al menos un carácter
+                                        especial (!@#$%^&*)</div>
+                                </div>
                                 <div class="invalid-feedback">La contraseña debe tener al menos 10 caracteres.</div>
                             </div>
 
                             <!-- Confirmar Contraseña -->
                             <div class="col-md-6 mb-4">
-                                <label for="confirmar_password" class="form-label">Confirmar Contraseña</label>
+                                <label for="confirmar_password" class="form-label text-white">Confirmar
+                                    Contraseña</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                     <input type="password" class="form-control" id="confirmar_password"
@@ -154,7 +172,7 @@ require_once INCLUDES_PATH . '/header.php';
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
-                                <div class="invalid-feedback">Las contraseñas no coinciden.</div>
+                                <div class="invalid-feedback text-white">Las contraseñas no coinciden.</div>
                             </div>
                         </div>
 
@@ -183,6 +201,18 @@ require_once INCLUDES_PATH . '/header.php';
                             </div>
                         </div>
 
+                        <!-- Recordar sesión y olvidó contraseña -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                                <label class="form-check-label" for="remember">Recordar sesión</label>
+                            </div>
+                            <a href="<?php echo htmlspecialchars(BASE_URL . 'views/recuperar_password.php'); ?>"
+                                class="text-primary">
+                                <i class="fas fa-key me-1"></i>¿Has olvidado la contraseña?
+                            </a>
+                        </div>
+
                         <!-- Botón de registro con efecto cyber -->
                         <div class="form-group mb-4">
                             <button type="submit" class="btn btn-primary btn-lg w-100 shadow-pulse">
@@ -197,7 +227,8 @@ require_once INCLUDES_PATH . '/header.php';
                     <!-- Enlace a login -->
                     <div class="text-center mt-4 animate__animated animate__fadeInUp animate__delay-3s">
                         <p>¿Ya tienes una cuenta?
-                            <a href="<?php echo BASE_URL; ?>views/login.php" class="text-primary">
+                            <a href="<?php echo htmlspecialchars(BASE_URL . 'public/login.php'); ?>"
+                                class="text-primary">
                                 <i class="fas fa-sign-in-alt me-1"></i>Inicia sesión
                             </a>
                         </p>
@@ -208,78 +239,10 @@ require_once INCLUDES_PATH . '/header.php';
     </div>
 </div>
 
-<!-- Script para manejar formulario -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Gestión de los botones para mostrar/ocultar contraseña
-        document.querySelectorAll('.toggle-password').forEach(button => {
-            button.addEventListener('click', function () {
-                const input = this.previousElementSibling;
-                const icon = this.querySelector('i');
-
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    input.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                }
-            });
-        });
-
-        // Manejo de cambio de tipo de usuario en registro
-        const tipoUsuarioSelect = document.getElementById('tipo_usuario');
-        if (tipoUsuarioSelect) {
-            tipoUsuarioSelect.addEventListener('change', function () {
-                // Mostrar/ocultar campos específicos según el tipo de usuario
-                const tipoUsuario = this.value;
-                const clienteFields = document.querySelectorAll('.cliente-field');
-                const empleadoFields = document.querySelectorAll('.empleado-field');
-
-                if (tipoUsuario === 'cliente') {
-                    clienteFields.forEach(field => field.classList.remove('d-none'));
-                    empleadoFields.forEach(field => field.classList.add('d-none'));
-                } else if (tipoUsuario === 'empleado') {
-                    clienteFields.forEach(field => field.classList.add('d-none'));
-                    empleadoFields.forEach(field => field.classList.remove('d-none'));
-                }
-            });
-        }
-
-        // Validación del formulario
-        const registroForm = document.getElementById('registroForm');
-        if (registroForm) {
-            registroForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                // Validación básica
-                let isValid = true;
-                const password = document.getElementById('password');
-                const confirmarPassword = document.getElementById('confirmar_password');
-
-                // Verificar que las contraseñas coincidan
-                if (password.value !== confirmarPassword.value) {
-                    isValid = false;
-                    confirmarPassword.classList.add('is-invalid');
-                    const alertElement = document.getElementById('registroMessage');
-                    alertElement.classList.remove('d-none', 'alert-success');
-                    alertElement.classList.add('alert-danger');
-                    alertElement.textContent = 'Las contraseñas no coinciden.';
-                    return;
-                }
-
-                // Si todo está bien, enviamos el formulario
-                if (isValid) {
-                    this.submit();
-                }
-            });
-        }
-    });
-</script>
+<!-- Incluir los scripts JS antes del footer -->
+<script src="<?php echo htmlspecialchars(BASE_URL . 'public/js/login_registro.js'); ?>"></script>
 
 <?php
 // Incluir pie de página
-require_once INCLUDES_PATH . '/footer.php';
+require_once BASE_PATH . '/views/plantillas/footer.php';
 ?>

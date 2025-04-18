@@ -1,0 +1,165 @@
+/* Estilos para el formulario de login y registro */
+body {
+  background: linear-gradient(135deg, #1a1f25 0%, #2b3441 100%);
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-body {
+  color: #e0e0e0;
+}
+
+/* Estilos para los campos del formulario */
+.form-label {
+  color: #e0e0e0;
+}
+
+.form-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.form-control:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.15);
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Estilos para los mensajes de validación */
+.invalid-feedback {
+  color: #ff8080;
+}
+
+.password-feedback {
+  color: #e0e0e0;
+}
+
+.password-requirements {
+  color: #e0e0e0;
+}
+
+/* Estilos para los enlaces */
+a {
+  color: #4a9eff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #77b6ff;
+}
+
+/* Estilos para los checkboxes y radio buttons */
+.form-check-label {
+  color: #e0e0e0;
+}
+
+/* Estilos para los select */
+.form-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.form-select:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Estilos para las opciones del select */
+.form-select option {
+  background-color: #2b3441;
+  color: #ffffff;
+}
+
+.form-select option:checked {
+  background-color: #4a9eff;
+  color: #ffffff;
+}
+
+/* Estilos para los botones */
+.btn-outline-secondary {
+  color: #e0e0e0;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-outline-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+/* Estilos para el indicador de fortaleza de contraseña */
+.progress {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+}
+
+/* Estilos para los iconos en los inputs */
+.input-group-text {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+}
+
+/* Animaciones y efectos */
+.shadow-pulse {
+  animation: shadow-pulse 2s infinite;
+}
+
+@keyframes shadow-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+/* Estilos para mensajes de alerta */
+.alert {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #e0e0e0;
+}
+
+.alert-success {
+  background: rgba(40, 167, 69, 0.2);
+}
+
+.alert-danger {
+  background: rgba(220, 53, 69, 0.2);
+}
+
+.alert-warning {
+  background: rgba(255, 193, 7, 0.2);
+}
+
+/* Partículas de fondo */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}

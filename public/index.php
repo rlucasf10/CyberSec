@@ -2,18 +2,23 @@
 // Definir constante para permitir acceso a archivos de configuración
 define('ACCESO_PERMITIDO', true);
 
-// Incluir archivo de constantes
-require_once __DIR__ . '/config/constants.php';
+// Incluir archivo de configuración
+require_once __DIR__ . '/../config/config.php';
 
-// Incluir archivo de inicialización
-require_once INCLUDES_PATH . '/init.php';
+// Iniciar el buffer de salida para evitar problemas con las cabeceras
+ob_start();
+
+// Iniciar sesión si aún no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Incluir encabezado
-require_once INCLUDES_PATH . '/header.php';
+require_once BASE_PATH . '/views/plantillas/header.php';
 ?>
 
 <!-- Estilos personalizados -->
-<link rel="stylesheet" href="<?php echo CSS_URL; ?>index.css">
+<link rel="stylesheet" href="<?php echo htmlspecialchars(BASE_URL . 'public/css/index.css'); ?>">
 
 <!-- Preloader -->
 <div id="preloader">
@@ -47,10 +52,12 @@ require_once INCLUDES_PATH . '/header.php';
                         data-strings='["pentesting", "auditoría de seguridad", "respuesta a incidentes", "consultoría especializada", "análisis de vulnerabilidades"]'></span>
                 </p>
                 <div class="mt-4 animate__animated animate__fadeInUp animate__delay-2s">
-                    <a href="<?php echo BASE_URL; ?>contacto.php" class="btn btn-primary btn-lg me-3 shadow-pulse">
+                    <a href="<?php echo htmlspecialchars(BASE_URL); ?>contacto.php"
+                        class="btn btn-primary btn-lg me-3 shadow-pulse">
                         <i class="fas fa-shield-alt me-2"></i> Protege tu Empresa
                     </a>
-                    <a href="<?php echo BASE_URL; ?>servicios.php" class="btn btn-outline-light btn-lg">
+                    <a href="<?php echo htmlspecialchars(BASE_URL); ?>servicios.php"
+                        class="btn btn-outline-light btn-lg">
                         <i class="fas fa-info-circle me-2"></i> Conoce Más
                     </a>
                 </div>
@@ -65,8 +72,8 @@ require_once INCLUDES_PATH . '/header.php';
             </div>
             <div class="col-lg-6 d-none d-lg-block" data-aos="fade-left" data-aos-delay="400">
                 <div class="hero-image-container">
-                    <img src="<?php echo IMG_URL; ?>hero-image.png" alt="Ciberseguridad"
-                        class="img-fluid animate__animated animate__zoomIn">
+                    <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/hero-image.png'); ?>"
+                        alt="Ciberseguridad" class="img-fluid animate__animated animate__zoomIn">
                     <div class="hero-blob"></div>
                     <div class="hero-floating-icon icon-1"><i class="fas fa-lock"></i></div>
                     <div class="hero-floating-icon icon-2"><i class="fas fa-shield-alt"></i></div>
@@ -113,7 +120,7 @@ require_once INCLUDES_PATH . '/header.php';
                         precauciones</div>
                 </div>
             </div>
-            <a href="<?php echo BASE_URL; ?>blog/alertas.php" class="alert-link">Ver todas <i
+            <a href="<?php echo htmlspecialchars(BASE_URL); ?>blog/alertas.php" class="alert-link">Ver todas <i
                     class="fas fa-arrow-right ms-1"></i></a>
         </div>
     </div>
@@ -141,7 +148,7 @@ require_once INCLUDES_PATH . '/header.php';
                         <h3 class="h4 mb-3">Pentesting</h3>
                         <p class="card-text text-muted">Evaluamos la seguridad de sus sistemas mediante simulaciones de
                             ataques controlados para identificar vulnerabilidades antes que los atacantes.</p>
-                        <a href="<?php echo BASE_URL; ?>servicios/pentesting.php"
+                        <a href="<?php echo htmlspecialchars(BASE_URL); ?>servicios/pentesting.php"
                             class="btn btn-sm btn-outline-primary mt-3 service-btn">
                             <i class="fas fa-arrow-right me-1"></i> Saber Más
                         </a>
@@ -160,7 +167,7 @@ require_once INCLUDES_PATH . '/header.php';
                         <h3 class="h4 mb-3">Auditoría de Seguridad</h3>
                         <p class="card-text text-muted">Analizamos su infraestructura para garantizar el cumplimiento de
                             normativas y estándares de seguridad internacionales.</p>
-                        <a href="<?php echo BASE_URL; ?>servicios/auditoria.php"
+                        <a href="<?php echo htmlspecialchars(BASE_URL); ?>servicios/auditoria.php"
                             class="btn btn-sm btn-outline-primary mt-3 service-btn">
                             <i class="fas fa-arrow-right me-1"></i> Saber Más
                         </a>
@@ -178,7 +185,7 @@ require_once INCLUDES_PATH . '/header.php';
                         <h3 class="h4 mb-3">Respuesta a Incidentes</h3>
                         <p class="card-text text-muted">Actuamos rápidamente para contener, analizar y remediar brechas
                             de seguridad, minimizando el impacto en su negocio.</p>
-                        <a href="<?php echo BASE_URL; ?>servicios/respuesta-incidentes.php"
+                        <a href="<?php echo htmlspecialchars(BASE_URL); ?>servicios/respuesta-incidentes.php"
                             class="btn btn-sm btn-outline-primary mt-3">
                             <i class="fas fa-arrow-right me-1"></i> Saber Más
                         </a>
@@ -196,7 +203,7 @@ require_once INCLUDES_PATH . '/header.php';
                         <h3 class="h4 mb-3">Consultoría Especializada</h3>
                         <p class="card-text text-muted">Ofrecemos asesoramiento personalizado en materia de
                             ciberseguridad alineado con los objetivos estratégicos de su empresa.</p>
-                        <a href="<?php echo BASE_URL; ?>servicios/consultoria.php"
+                        <a href="<?php echo htmlspecialchars(BASE_URL); ?>servicios/consultoria.php"
                             class="btn btn-sm btn-outline-primary mt-3">
                             <i class="fas fa-arrow-right me-1"></i> Saber Más
                         </a>
@@ -214,7 +221,7 @@ require_once INCLUDES_PATH . '/header.php';
                         <h3 class="h4 mb-3">Análisis de Vulnerabilidades</h3>
                         <p class="card-text text-muted">Identificamos y clasificamos las vulnerabilidades en sus
                             sistemas para priorizar y planificar su mitigación.</p>
-                        <a href="<?php echo BASE_URL; ?>servicios/analisis-vulnerabilidades.php"
+                        <a href="<?php echo htmlspecialchars(BASE_URL); ?>servicios/analisis-vulnerabilidades.php"
                             class="btn btn-sm btn-outline-primary mt-3">
                             <i class="fas fa-arrow-right me-1"></i> Saber Más
                         </a>
@@ -232,7 +239,7 @@ require_once INCLUDES_PATH . '/header.php';
                         <h3 class="h4 mb-3">Formación</h3>
                         <p class="card-text text-muted">Capacitamos a su equipo para reconocer y responder adecuadamente
                             a las amenazas de seguridad mediante cursos especializados.</p>
-                        <a href="<?php echo BASE_URL; ?>servicios/formacion.php"
+                        <a href="<?php echo htmlspecialchars(BASE_URL); ?>servicios/formacion.php"
                             class="btn btn-sm btn-outline-primary mt-3">
                             <i class="fas fa-arrow-right me-1"></i> Saber Más
                         </a>
@@ -280,8 +287,8 @@ require_once INCLUDES_PATH . '/header.php';
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
-                <img src="<?php echo IMG_URL; ?>security-team.jpg" alt="Equipo de seguridad"
-                    class="img-fluid rounded shadow-lg">
+                <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/security-team.jpg'); ?>"
+                    alt="Equipo de seguridad" class="img-fluid rounded shadow-lg">
             </div>
             <div class="col-lg-6" data-aos="fade-left">
                 <h2 class="section-title mb-4">¿Por qué <span class="text-gradient">elegirnos</span>?</h2>
@@ -347,25 +354,29 @@ require_once INCLUDES_PATH . '/header.php';
                 <div class="client-logos">
                     <div class="client-logo" data-aos="zoom-in" data-aos-delay="100">
                         <div class="client-logo-container">
-                            <img src="<?php echo IMG_URL; ?>clients/client1.png" alt="Cliente 1" class="img-fluid">
+                            <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/clients/client1.png'); ?>"
+                                alt="Cliente 1" class="img-fluid">
                             <p class="client-name">TechSecure Corp.</p>
                         </div>
                     </div>
                     <div class="client-logo" data-aos="zoom-in" data-aos-delay="200">
                         <div class="client-logo-container">
-                            <img src="<?php echo IMG_URL; ?>clients/client2.png" alt="Cliente 2" class="img-fluid">
+                            <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/clients/client2.png'); ?>"
+                                alt="Cliente 2" class="img-fluid">
                             <p class="client-name">InnovaSystems</p>
                         </div>
                     </div>
                     <div class="client-logo" data-aos="zoom-in" data-aos-delay="300">
                         <div class="client-logo-container">
-                            <img src="<?php echo IMG_URL; ?>clients/client3.png" alt="Cliente 3" class="img-fluid">
+                            <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/clients/client3.png'); ?>"
+                                alt="Cliente 3" class="img-fluid">
                             <p class="client-name">Global Defence</p>
                         </div>
                     </div>
                     <div class="client-logo" data-aos="zoom-in" data-aos-delay="400">
                         <div class="client-logo-container">
-                            <img src="<?php echo IMG_URL; ?>clients/client4.png" alt="Cliente 4" class="img-fluid">
+                            <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/clients/client4.png'); ?>"
+                                alt="Cliente 4" class="img-fluid">
                             <p class="client-name">DataShield Inc.</p>
                         </div>
                     </div>
@@ -401,8 +412,8 @@ require_once INCLUDES_PATH . '/header.php';
                                 profesionalidad y conocimiento técnico son excepcionales."</p>
                         </div>
                         <div class="testimonial-client">
-                            <img src="<?php echo IMG_URL; ?>testimonials/client1.jpg" alt="Cliente 1"
-                                class="testimonial-client-image">
+                            <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/testimonials/client1.jpg'); ?>"
+                                alt="Cliente 1" class="testimonial-client-image">
                             <div class="testimonial-client-info">
                                 <h5 class="testimonial-client-name">Carlos Rodríguez</h5>
                                 <p class="testimonial-client-role">CISO en Banco Nacional</p>
@@ -427,8 +438,8 @@ require_once INCLUDES_PATH . '/header.php';
                                 activos digitales."</p>
                         </div>
                         <div class="testimonial-client">
-                            <img src="<?php echo IMG_URL; ?>testimonials/client2.jpg" alt="Cliente 2"
-                                class="testimonial-client-image">
+                            <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/testimonials/client2.jpg'); ?>"
+                                alt="Cliente 2" class="testimonial-client-image">
                             <div class="testimonial-client-info">
                                 <h5 class="testimonial-client-name">Ana Martínez</h5>
                                 <p class="testimonial-client-role">Directora de IT en TechSolutions</p>
@@ -453,8 +464,8 @@ require_once INCLUDES_PATH . '/header.php';
                                 recuperación. Su experiencia fue invaluable."</p>
                         </div>
                         <div class="testimonial-client">
-                            <img src="<?php echo IMG_URL; ?>testimonials/client3.jpg" alt="Cliente 3"
-                                class="testimonial-client-image">
+                            <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/testimonials/client3.jpg'); ?>"
+                                alt="Cliente 3" class="testimonial-client-image">
                             <div class="testimonial-client-info">
                                 <h5 class="testimonial-client-name">Jorge Sánchez</h5>
                                 <p class="testimonial-client-role">CEO de RetailGroup</p>
@@ -499,7 +510,8 @@ require_once INCLUDES_PATH . '/header.php';
             <!-- Artículo 1 -->
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
                 <div class="card blog-card h-100">
-                    <img src="<?php echo IMG_URL; ?>blog/blog1.jpg" class="card-img-top" alt="Ransomware">
+                    <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/blog/blog1.jpg'); ?>"
+                        class="card-img-top" alt="Ransomware">
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="badge bg-primary">Amenazas</span>
@@ -520,7 +532,8 @@ require_once INCLUDES_PATH . '/header.php';
             <!-- Artículo 2 -->
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
                 <div class="card blog-card h-100">
-                    <img src="<?php echo IMG_URL; ?>blog/blog2.jpg" class="card-img-top" alt="Zero Trust">
+                    <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/blog/blog2.jpg'); ?>"
+                        class="card-img-top" alt="Zero Trust">
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="badge bg-success">Estrategias</span>
@@ -541,7 +554,8 @@ require_once INCLUDES_PATH . '/header.php';
             <!-- Artículo 3 -->
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
                 <div class="card blog-card h-100">
-                    <img src="<?php echo IMG_URL; ?>blog/blog3.jpg" class="card-img-top" alt="Phishing">
+                    <img src="<?php echo htmlspecialchars(BASE_URL . 'public/img/blog/blog3.jpg'); ?>"
+                        class="card-img-top" alt="Phishing">
                     <div class="card-body">
                         <div class="d-flex justify-content-between mb-2">
                             <span class="badge bg-danger">Alertas</span>
@@ -568,29 +582,24 @@ require_once INCLUDES_PATH . '/header.php';
     </div>
 </section>
 
-<!-- Script para la animación de texto -->
+<!-- Scripts externos -->
 <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-
-<!-- Script para Swiper JS -->
-<link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
 <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
-
-<!-- AOS (Animate On Scroll) CSS y JS -->
-<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    // Inicialización de AOS
-    document.addEventListener('DOMContentLoaded', function () {
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true,
-            mirror: false
-        });
-    });
-</script>
+
+<!-- Estilos externos -->
+<link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<!-- Scripts específicos -->
+<script src="<?php echo htmlspecialchars(BASE_URL . 'public/js/index.js?v=' . $version); ?>"></script>
 
 <?php
+// Limpiar buffer antes de incluir el pie de página
+if (ob_get_length()) {
+    ob_end_flush();
+}
+
 // Incluir pie de página
-require_once INCLUDES_PATH . '/footer.php';
+require_once BASE_PATH . '/views/plantillas/footer.php';
 ?>

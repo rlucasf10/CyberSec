@@ -132,17 +132,8 @@
 <!-- Scripts comunes -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/js/header_footer.js?v=<?php echo $version; ?>"></script>
+<script src="<?php echo htmlspecialchars(BASE_URL . 'views/plantillas/header_footer.js?v=' . $version); ?>"></script>
 
-<!-- JS específico de la página -->
-<?php if (file_exists(ASSETS_PATH . "/js/{$current_page}.js")): ?>
-    <script src="<?php echo BASE_URL; ?>assets/js/<?php echo $current_page; ?>.js?v=<?php echo $version; ?>"></script>
-<?php endif; ?>
-
-
-<!-- Fin del body -->
 </body>
-
-<!-- Fin del documento HTML -->
 
 </html>

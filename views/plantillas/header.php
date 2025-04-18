@@ -5,7 +5,7 @@ if (!defined('ACCESO_PERMITIDO')) {
 }
 
 // Incluir archivo de inicialización
-require_once dirname(__DIR__) . '/includes/init.php';
+require_once dirname(dirname(__DIR__)) . '/config/init.php';
 
 // Determinar página actual y versión de caché
 $current_page = basename($_SERVER['PHP_SELF'], '.php');
@@ -32,13 +32,9 @@ $version = time();
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <!-- CSS Base -->
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/header_footer.css?v=<?php echo $version; ?>">
+    <link rel="stylesheet"
+        href="<?php echo htmlspecialchars(BASE_URL . 'views/plantillas/header_footer.css?v=' . $version); ?>">
 
-    <!-- CSS específico de la página -->
-    <?php if (file_exists(ASSETS_PATH . "/css/{$current_page}.css")): ?>
-        <link rel="stylesheet"
-            href="<?php echo BASE_URL; ?>assets/css/<?php echo $current_page; ?>.css?v=<?php echo $version; ?>">
-    <?php endif; ?>
 </head>
 
 <body>
@@ -116,16 +112,46 @@ $version = time();
                         </li>
                         <li class="nav-item ms-lg-2">
                             <?php if (isset($_SESSION['user_id'])): ?>
-                                <a class="btn btn-primary cyber-glow-effect" href="<?php echo BASE_URL; ?>logout.php">
-                                    <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
-                                </a>
+                                <!-- Menú desplegable para usuario autenticado -->
+                                <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle cyber-glow-effect" type="button"
+                                        id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-user-circle me-1"></i>
+                                        <?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Usuario'); ?>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark"
+                                        aria-labelledby="userDropdown">
+                                        <?php if ($_SESSION['user_type'] === 'admin'): ?>
+                                            <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>views/panel/usuarios.php">
+                                                    <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios
+                                                </a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                        <?php endif; ?>
+                                        <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>views/panel/perfil.php">
+                                                <i class="fas fa-user-edit me-2"></i>Mi Perfil
+                                            </a></li>
+                                        <li><a class="dropdown-item"
+                                                href="<?php echo BASE_URL; ?>views/panel/proyectos.php">
+                                                <i class="fas fa-project-diagram me-2"></i>Mis Proyectos
+                                            </a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item text-danger"
+                                                href="<?php echo BASE_URL; ?>public/logout.php">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                                            </a></li>
+                                    </ul>
+                                </div>
                             <?php else: ?>
                                 <a class="btn btn-outline-primary cyber-glow-effect"
-                                    href="<?php echo BASE_URL; ?>views/login.php">
+                                    href="<?php echo BASE_URL; ?>public/login.php">
                                     <i class="fas fa-sign-in-alt me-1"></i>Login
                                 </a>
                                 <a class="btn btn-primary cyber-glow-effect ms-2"
-                                    href="<?php echo BASE_URL; ?>views/registro.php">
+                                    href="<?php echo BASE_URL; ?>public/registro.php">
                                     <i class="fas fa-user-plus me-1"></i>Registro
                                 </a>
                             <?php endif; ?>

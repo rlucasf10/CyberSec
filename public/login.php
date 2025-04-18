@@ -2,27 +2,24 @@
 // Definir constante para permitir acceso a archivos de configuración
 define('ACCESO_PERMITIDO', true);
 
-// Incluir archivo de constantes
-require_once __DIR__ . '/../config/constants.php';
-
-// Incluir archivo de inicialización
-require_once INCLUDES_PATH . '/init.php';
+// Incluir archivo de configuración
+require_once dirname(__DIR__) . '/config/config.php';
 
 // Título de la página
 $page_title = "Iniciar Sesión";
 
 // Si el usuario ya está autenticado, redirigir a index
 if (isset($_SESSION['user_id'])) {
-    header("Location: " . BASE_URL);
+    header("Location: " . BASE_URL . "public/index.php");
     exit;
 }
 
 // Incluir encabezado
-require_once INCLUDES_PATH . '/header.php';
+require_once BASE_PATH . '/views/plantillas/header.php';
 ?>
 
 <!-- Estilos personalizados -->
-<link rel="stylesheet" href="<?php echo BASE_URL; ?>assets/css/login_registro.css">
+<link rel="stylesheet" href="<?php echo htmlspecialchars(BASE_URL . 'public/css/login_registro.css'); ?>">
 
 
 <!-- Partículas de fondo para efectos visuales -->
@@ -37,7 +34,7 @@ require_once INCLUDES_PATH . '/header.php';
                     <div class="text-center mb-4">
                         <i class="fas fa-shield-alt fa-3x text-primary mb-3 animate__animated animate__fadeInDown"></i>
                         <h2 class="fw-bold animate__animated animate__fadeInUp">Iniciar Sesión</h2>
-                        <p class="text-muted animate__animated animate__fadeInUp animate__delay-1s">Accede a tu cuenta
+                        <p class="text-light animate__animated animate__fadeInUp animate__delay-1s">Accede a tu cuenta
                             para gestionar tus servicios de ciberseguridad</p>
                     </div>
 
@@ -104,6 +101,14 @@ require_once INCLUDES_PATH . '/header.php';
                             </button>
                         </div>
 
+                        <!-- Botón de Google con el mismo estilo -->
+                        <div class="form-group mb-4">
+                            <a href="<?php echo htmlspecialchars(BASE_URL . 'controllers/auth_controller.php?action=google_auth'); ?>"
+                                class="btn btn-primary btn-lg w-100 shadow-pulse">
+                                <i class="fab fa-google me-2"></i>Iniciar con Google
+                            </a>
+                        </div>
+
                         <!-- Mensaje de resultado (inicialmente oculto) -->
                         <div id="loginMessage" class="alert d-none" role="alert"></div>
                     </form>
@@ -122,69 +127,10 @@ require_once INCLUDES_PATH . '/header.php';
     </div>
 </div>
 
-<!-- Script para manejar formulario -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Gestión de los botones para mostrar/ocultar contraseña
-        document.querySelectorAll('.toggle-password').forEach(button => {
-            button.addEventListener('click', function () {
-                const input = this.previousElementSibling;
-                const icon = this.querySelector('i');
-
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    input.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                }
-            });
-        });
-
-        // Validación del formulario
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                // Validación básica
-                let isValid = true;
-                const email = document.getElementById('email');
-                const password = document.getElementById('password');
-
-                if (!email.value.trim() || !password.value.trim()) {
-                    isValid = false;
-                    const alertElement = document.getElementById('loginMessage');
-                    alertElement.classList.remove('d-none', 'alert-success');
-                    alertElement.classList.add('alert-danger');
-                    alertElement.textContent = 'Por favor complete todos los campos.';
-                    return;
-                }
-
-                // Si todo está bien, enviamos el formulario
-                if (isValid) {
-                    this.submit();
-                }
-            });
-        }
-    });
-</script>
-
-<!-- Seguridad adicional -->
-<script nonce="<?php echo $_SESSION['nonce'] ?? ''; ?>">
-    // Evitar que la página se cargue en un iframe
-    if (window.self !== window.top) {
-        window.top.location.href = window.self.location.href;
-    }
-</script>
-
 <!-- Incluir los scripts JS antes del footer -->
-<script src="<?php echo BASE_URL; ?>assets/js/login_registro.js"></script>
-<script src="<?php echo BASE_URL; ?>assets/js/header_footer.js"></script>
+<script src="<?php echo htmlspecialchars(BASE_URL . 'public/js/login_registro.js'); ?>"></script>
 
 <?php
 // Incluir pie de página
-require_once INCLUDES_PATH . '/footer.php';
+require_once BASE_PATH . '/views/plantillas/footer.php';
 ?>

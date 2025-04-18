@@ -1,529 +1,328 @@
 <?php
-/**
- * Controlador de autenticación
- * Gestiona login, registro y recuperación de contraseña
- */
-
-// Definir constante para permitir acceso a archivos de configuración
+// Definir constante para permitir acceso
 define('ACCESO_PERMITIDO', true);
 
-// Incluir archivo de constantes y configuración
-require_once __DIR__ . '/../config/constants.php';
+// Asegurar que no se envíe ningún output antes de los headers
+ob_start();
 
-// Incluir archivo de inicialización
-require_once INCLUDES_PATH . '/init.php';
+session_start();
 
-// Incluir modelo de usuario
-require_once MODELS_PATH . '/Usuario.php';
+// Incluir el autoloader de Composer y demás archivos necesarios
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/init.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/usuario.php';
+require_once __DIR__ . '/../src/Auth/GoogleAuth.php';
+require_once __DIR__ . '/../src/Mail/Mailer.php';
 
-// Iniciar o reanudar sesión si no está iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+use CyberSec\Mail\Mailer;
+use CyberSec\Auth\GoogleAuth;
 
-// Crear instancia del modelo Usuario
-$usuarioModel = new Usuario();
+// Obtener la acción solicitada
+$action = $_GET['action'] ?? '';
 
-// Determinar la acción a realizar
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+// Inicializar el objeto Usuario
+$usuario = new Usuario();
+$response = ['status' => 'error', 'message' => ''];
 
-// Verificar token CSRF para todas las solicitudes POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verificar que el token existe y coincide
-    if (
-        !isset($_POST['csrf_token']) || !isset($_SESSION[CSRF_TOKEN_NAME]) ||
-        $_POST['csrf_token'] !== $_SESSION[CSRF_TOKEN_NAME]
-    ) {
-        // Token inválido o expirado
-        $response = [
-            'status' => 'error',
-            'message' => ERROR_CSRF
-        ];
-        echo json_encode($response);
-        exit;
-    }
-}
-
-// Router para las diferentes acciones
-switch ($action) {
-    case 'login':
-        handleLogin();
-        break;
-
-    case 'register':
-        handleRegister();
-        break;
-
-    case 'recover':
-        handlePasswordRecovery();
-        break;
-
-    case 'reset':
-        handlePasswordReset();
-        break;
-
-    case 'logout':
-        handleLogout();
-        break;
-
-    default:
-        // Acción no reconocida
-        $response = [
-            'status' => 'error',
-            'message' => 'Acción no válida'
-        ];
-        echo json_encode($response);
-        break;
-}
-
-/**
- * Maneja el inicio de sesión de usuarios
- */
-function handleLogin()
-{
-    global $usuarioModel;
-
-    // Verificar solicitud POST
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('HTTP/1.1 405 Method Not Allowed');
-        exit('Método no permitido');
-    }
-
-    // Validar datos recibidos
-    if (!isset($_POST['email']) || !isset($_POST['password'])) {
-        $response = [
-            'status' => 'error',
-            'message' => 'Todos los campos son obligatorios'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
-    $password = $_POST['password'];
-    $tipoUsuario = isset($_POST['tipo_usuario']) ? $_POST['tipo_usuario'] : 'cliente';
-
-    // Validar email
-    if (!$email) {
-        $response = [
-            'status' => 'error',
-            'message' => 'El correo electrónico no es válido'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    try {
-        // Intentar autenticar al usuario
-        $result = $usuarioModel->autenticar($email, $password);
-
-        if ($result['status'] === 'success') {
-            // Verificar que el tipo de usuario coincida
-            if ($result['usuario']['tipo_usuario'] !== $tipoUsuario) {
-                $response = [
-                    'status' => 'error',
-                    'message' => 'Tipo de usuario incorrecto. Por favor, verifique sus credenciales.'
-                ];
-                echo json_encode($response);
-                return;
+try {
+    switch ($action) {
+        case 'google_auth':
+            try {
+                $googleAuth = new GoogleAuth();
+                $authUrl = $googleAuth->getAuthUrl();
+                header('Location: ' . $authUrl);
+                exit;
+            } catch (Exception $e) {
+                error_log("Error en autenticación de Google: " . $e->getMessage());
+                header('Location: ' . BASE_URL . 'public/login.php?error=' . urlencode('Error al iniciar sesión con Google'));
+                exit;
             }
 
-            // Iniciar sesión del usuario
-            $_SESSION['user_id'] = $result['usuario']['id'];
-            $_SESSION['user_email'] = $result['usuario']['email'];
-            $_SESSION['user_type'] = $result['usuario']['tipo_usuario'];
-            $_SESSION['referencia_id'] = $result['usuario']['referencia_id'];
-            $_SESSION['ultimo_acceso'] = time();
+        case 'google_callback':
+            try {
+                if (isset($_GET['error'])) {
+                    throw new Exception('Error en la autenticación con Google: ' . $_GET['error']);
+                }
 
-            // Recordar sesión si se ha solicitado
-            if (isset($_POST['remember']) && $_POST['remember'] == 'on') {
-                // Extiende la vida de la cookie de sesión a 30 días
-                $params = session_get_cookie_params();
-                setcookie(
-                    session_name(),
-                    session_id(),
-                    time() + (86400 * 30), // 30 días
-                    $params["path"],
-                    $params["domain"],
-                    $params["secure"],
-                    $params["httponly"]
-                );
+                if (!isset($_GET['code'])) {
+                    throw new Exception('Código de autorización no recibido');
+                }
+
+                $googleAuth = new GoogleAuth();
+                $userData = $googleAuth->handleCallback($_GET['code']);
+
+                if (empty($userData['email'])) {
+                    throw new Exception('No se pudo obtener el email del usuario de Google');
+                }
+
+                // Verificar si el usuario ya existe
+                $existingUser = $usuario->obtenerPorEmail($userData['email']);
+
+                if (!$existingUser) {
+                    // Generar una contraseña aleatoria segura para usuarios de Google
+                    $password = bin2hex(random_bytes(16));
+                    $salt = bin2hex(random_bytes(32));
+                    $password_hash = hash('sha256', $password . $salt);
+
+                    // Preparar datos del usuario
+                    $datos = [
+                        'nombre' => $userData['nombre'],
+                        'apellidos' => $userData['apellidos'],
+                        'email' => $userData['email'],
+                        'password' => $password_hash,
+                        'tipo_usuario' => 'cliente',
+                        'salt' => $salt,
+                        'estado' => 'activo',
+                        'auth_method' => 'google'
+                    ];
+
+                    // Registrar el nuevo usuario
+                    $resultado = $usuario->registrar($datos);
+
+                    if (!$resultado || (is_array($resultado) && isset($resultado['status']) && $resultado['status'] !== 'success')) {
+                        error_log('Error al registrar usuario de Google: ' . json_encode($resultado));
+                        throw new Exception('Error al registrar el usuario con Google');
+                    }
+
+                    // Obtener el usuario recién creado
+                    $existingUser = $usuario->obtenerPorEmail($userData['email']);
+
+                    if (!$existingUser) {
+                        throw new Exception('Error al recuperar el usuario después del registro');
+                    }
+                }
+
+                // Iniciar sesión
+                $_SESSION['user_id'] = $existingUser['id'];
+                $_SESSION['user_email'] = $existingUser['email'];
+                $_SESSION['user_type'] = $existingUser['tipo'];
+                $_SESSION['user_name'] = $existingUser['nombre'];
+                $_SESSION['auth_method'] = 'google';
+
+                header('Location: ' . BASE_URL . 'public/index.php');
+                exit;
+
+            } catch (Exception $e) {
+                error_log("Error en callback de Google: " . $e->getMessage());
+                header('Location: ' . BASE_URL . 'public/login.php?error=' . urlencode($e->getMessage()));
+                exit;
             }
 
-            // Regenerar ID de sesión para prevenir ataques de fijación
-            session_regenerate_id(true);
-
-            // Determinar URL de redirección según tipo de usuario
-            $redirect = BASE_URL;
-            if ($tipoUsuario === 'empleado') {
-                $redirect = BASE_URL . 'panel/empleado/';
-            } elseif ($tipoUsuario === 'administrador') {
-                $redirect = BASE_URL . 'panel/admin/';
+        default:
+            // Verificar que sea una petición POST
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Método no permitido');
             }
 
-            $response = [
-                'status' => 'success',
-                'message' => 'Inicio de sesión exitoso',
-                'redirect' => $redirect
-            ];
-        } else {
-            $response = [
-                'status' => 'error',
-                'message' => $result['message']
-            ];
-        }
-
-        echo json_encode($response);
-
-    } catch (Exception $e) {
-        $response = [
-            'status' => 'error',
-            'message' => 'Error al procesar la solicitud: ' . $e->getMessage()
-        ];
-        echo json_encode($response);
-    }
-}
-
-/**
- * Maneja el registro de nuevos usuarios
- */
-function handleRegister()
-{
-    global $usuarioModel;
-
-    // Verificar solicitud POST
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('HTTP/1.1 405 Method Not Allowed');
-        exit('Método no permitido');
-    }
-
-    // Validar datos recibidos
-    $requiredFields = ['nombre', 'apellidos', 'email', 'password', 'confirmar_password', 'tipo_usuario'];
-    foreach ($requiredFields as $field) {
-        if (!isset($_POST[$field]) || empty($_POST[$field])) {
-            $response = [
-                'status' => 'error',
-                'message' => 'Todos los campos marcados son obligatorios'
-            ];
-            echo json_encode($response);
-            return;
-        }
-    }
-
-    // Verificar términos y condiciones
-    if (!isset($_POST['terminos']) || $_POST['terminos'] !== 'on') {
-        $response = [
-            'status' => 'error',
-            'message' => 'Debe aceptar los términos y condiciones para continuar'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    // Recoger datos del formulario
-    $nombre = filter_var($_POST['nombre'], FILTER_SANITIZE_STRING);
-    $apellidos = filter_var($_POST['apellidos'], FILTER_SANITIZE_STRING);
-    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
-    $password = $_POST['password'];
-    $confirmarPassword = $_POST['confirmar_password'];
-    $tipoUsuario = $_POST['tipo_usuario'];
-    $telefono = isset($_POST['telefono']) ? filter_var($_POST['telefono'], FILTER_SANITIZE_STRING) : '';
-    $direccion = isset($_POST['direccion']) ? filter_var($_POST['direccion'], FILTER_SANITIZE_STRING) : '';
-
-    // Validaciones adicionales
-    if (!$email) {
-        $response = [
-            'status' => 'error',
-            'message' => 'El correo electrónico no es válido'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    if (strlen($password) < PASSWORD_MIN_LENGTH) {
-        $response = [
-            'status' => 'error',
-            'message' => 'La contraseña debe tener al menos ' . PASSWORD_MIN_LENGTH . ' caracteres'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    if ($password !== $confirmarPassword) {
-        $response = [
-            'status' => 'error',
-            'message' => 'Las contraseñas no coinciden'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    // Campos específicos según tipo de usuario
-    $empresa = '';
-    $especialidad = '';
-    $referenciaId = null;
-
-    try {
-        // Crear cliente o empleado según el tipo
-        if ($tipoUsuario === 'cliente') {
-            $empresa = isset($_POST['empresa']) ? filter_var($_POST['empresa'], FILTER_SANITIZE_STRING) : '';
-
-            // Insertar en la tabla clientes
-            $pdo = getDbConnection();
-            $sql = "INSERT INTO clientes (nombre, apellidos, empresa, email, telefono, direccion, estado) 
-                    VALUES (?, ?, ?, ?, ?, ?, 'potencial')";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nombre, $apellidos, $empresa, $email, $telefono, $direccion]);
-
-            $referenciaId = $pdo->lastInsertId();
-        } elseif ($tipoUsuario === 'empleado') {
-            $especialidad = isset($_POST['especialidad']) ? filter_var($_POST['especialidad'], FILTER_SANITIZE_STRING) : '';
-
-            // Insertar en la tabla empleados
-            $pdo = getDbConnection();
-            $sql = "INSERT INTO empleados (nombre, apellidos, email, telefono, direccion, puesto, especialidad, estado) 
-                    VALUES (?, ?, ?, ?, ?, 'Consultor', ?, 'inactivo')";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([$nombre, $apellidos, $email, $telefono, $direccion, $especialidad]);
-
-            $referenciaId = $pdo->lastInsertId();
-        }
-
-        // Registrar usuario en el sistema de autenticación
-        $result = $usuarioModel->registrar($email, $password, $tipoUsuario, $referenciaId);
-
-        if ($result['status'] === 'success') {
-            $response = [
-                'status' => 'success',
-                'message' => 'Registro exitoso. Ahora puede iniciar sesión.',
-                'redirect' => BASE_URL . 'views/login.php'
-            ];
-        } else {
-            // Si falla el registro de usuario, eliminar el cliente/empleado creado
-            if ($referenciaId) {
-                $tabla = ($tipoUsuario === 'cliente') ? 'clientes' : 'empleados';
-                $sql = "DELETE FROM $tabla WHERE id = ?";
-                $stmt = $pdo->prepare($sql);
-                $stmt->execute([$referenciaId]);
+            // Verificar token CSRF
+            if (!isset($_POST['csrf_token']) || !validateCSRFToken($_POST['csrf_token'])) {
+                throw new Exception('Token CSRF inválido');
             }
 
-            $response = [
-                'status' => 'error',
-                'message' => $result['message']
-            ];
-        }
+            // Obtener la acción solicitada
+            $action = $_GET['action'] ?? '';
 
-        echo json_encode($response);
+            $usuario = new Usuario();
+            $response = ['status' => 'error', 'message' => ''];
 
-    } catch (Exception $e) {
-        $response = [
-            'status' => 'error',
-            'message' => 'Error al procesar la solicitud: ' . $e->getMessage()
-        ];
-        echo json_encode($response);
+            switch ($action) {
+                case 'login':
+                    // Validar datos de inicio de sesión
+                    $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
+                    $password = $_POST['password'] ?? '';
+                    $tipo_usuario = $_POST['tipo_usuario'] ?? '';
+
+                    if (!$email || !$password || !$tipo_usuario) {
+                        throw new Exception('Por favor, complete todos los campos.');
+                    }
+
+                    // Obtener usuario por email
+                    $userData = $usuario->obtenerPorEmail($email);
+                    if (!$userData) {
+                        throw new Exception('Credenciales incorrectas.');
+                    }
+
+                    // Verificar tipo de usuario
+                    if ($userData['tipo'] !== $tipo_usuario) {
+                        throw new Exception('Tipo de usuario incorrecto.');
+                    }
+
+                    // Verificar estado del usuario
+                    if ($userData['estado'] !== 'activo') {
+                        throw new Exception('La cuenta no está activa. Contacte al administrador.');
+                    }
+
+                    // Verificar contraseña
+                    $password_hash = hash('sha256', $password . $userData['salt']);
+                    if ($password_hash !== $userData['password_hash']) {
+                        throw new Exception('Credenciales incorrectas.');
+                    }
+
+                    // Iniciar sesión
+                    $_SESSION['user_id'] = $userData['id'];
+                    $_SESSION['user_email'] = $userData['email'];
+                    $_SESSION['user_type'] = $userData['tipo'];
+                    $_SESSION['user_name'] = $userData['nombre'];
+                    $_SESSION['auth_method'] = 'normal';
+
+                    // Si se marcó "recordar sesión", establecer una cookie
+                    if (isset($_POST['remember']) && $_POST['remember'] === 'on') {
+                        $token = bin2hex(random_bytes(32));
+                        setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', true, true);
+                        $usuario->guardarTokenRecuerdo($userData['id'], $token);
+                    }
+
+                    $response = [
+                        'status' => 'success',
+                        'message' => '¡Bienvenido/a ' . $userData['nombre'] . '!',
+                        'redirect' => BASE_URL . 'public/index.php'
+                    ];
+                    break;
+
+                case 'register':
+                    // Validar y sanitizar datos
+                    $datos = [
+                        'nombre' => sanitize($_POST['nombre'] ?? ''),
+                        'apellidos' => sanitize($_POST['apellidos'] ?? ''),
+                        'email' => sanitize($_POST['email'] ?? ''),
+                        'password' => $_POST['password'] ?? '',
+                        'tipo_usuario' => sanitize($_POST['tipo_usuario'] ?? ''),
+                        'telefono' => sanitize($_POST['telefono'] ?? ''),
+                        'direccion' => sanitize($_POST['direccion'] ?? ''),
+                        'empresa' => sanitize($_POST['empresa'] ?? ''),
+                        'especialidad' => sanitize($_POST['especialidad'] ?? '')
+                    ];
+
+                    // Validar datos
+                    $usuario->validarDatosRegistro($datos);
+
+                    // Registrar usuario
+                    if ($usuario->registrar($datos)) {
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Usuario registrado exitosamente',
+                            'redirect' => BASE_URL . 'public/login.php'
+                        ];
+                    }
+                    break;
+
+                case 'recovery_request':
+                    $email = filter_var($_POST['email'] ?? '', FILTER_VALIDATE_EMAIL);
+                    if (!$email) {
+                        throw new Exception('El correo electrónico no es válido.');
+                    }
+
+                    $userData = $usuario->obtenerPorEmail($email);
+                    if (!$userData) {
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Se ha enviado un enlace de recuperación a tu correo electrónico.'
+                        ];
+                        break;
+                    }
+
+                    $token = bin2hex(random_bytes(32));
+                    $result = $usuario->generarTokenRecuperacion($email, $token);
+
+                    if ($result['status'] === 'success') {
+                        $mailer = new Mailer();
+                        $resetLink = BASE_URL . 'views/recuperar_password.php?token=' . $token;
+
+                        $mailResult = $mailer->enviarRecuperacionPassword(
+                            $email,
+                            $userData['nombre'] ?? 'Usuario',
+                            $resetLink
+                        );
+
+                        if ($mailResult['status'] === 'success') {
+                            $response = [
+                                'status' => 'success',
+                                'message' => 'Se ha enviado un enlace de recuperación a tu correo electrónico.'
+                            ];
+                        } else {
+                            $usuario->eliminarTokenRecuperacion($email);
+                            throw new Exception('Error al enviar el correo de recuperación.');
+                        }
+                    } else {
+                        throw new Exception($result['message'] ?? 'No se pudo procesar la solicitud.');
+                    }
+                    break;
+
+                case 'reset_password':
+                    // Validar token
+                    $token = $_POST['token'] ?? '';
+                    if (empty($token)) {
+                        $response = [
+                            'status' => 'error',
+                            'message' => 'Token inválido o expirado.'
+                        ];
+                        break;
+                    }
+
+                    // Verificar token
+                    $verificacion = $usuario->verificarToken($token);
+                    if ($verificacion['status'] !== 'success') {
+                        $response = [
+                            'status' => 'error',
+                            'message' => 'El enlace ha expirado o no es válido.'
+                        ];
+                        break;
+                    }
+
+                    // Validar contraseña
+                    $password = $_POST['password'] ?? '';
+                    if (strlen($password) < 10) {
+                        $response = [
+                            'status' => 'error',
+                            'message' => 'La contraseña debe tener al menos 10 caracteres.'
+                        ];
+                        break;
+                    }
+
+                    // Generar nuevo salt y hash
+                    $salt = bin2hex(random_bytes(16));
+                    $passwordHash = hash('sha256', $password . $salt);
+
+                    // Cambiar contraseña
+                    $result = $usuario->cambiarPassword($verificacion['usuario_id'], $passwordHash, $salt);
+
+                    if ($result['status'] === 'success') {
+                        $response = [
+                            'status' => 'success',
+                            'message' => 'Contraseña actualizada correctamente.',
+                            'redirect' => BASE_URL . 'public/login.php'
+                        ];
+                    } else {
+                        $response = [
+                            'status' => 'error',
+                            'message' => $result['message'] ?? 'Error al actualizar la contraseña.'
+                        ];
+                    }
+                    break;
+
+                default:
+                    throw new Exception('Acción no válida');
+            }
     }
+} catch (Exception $e) {
+    $response = [
+        'status' => 'error',
+        'message' => DEBUG_MODE ? $e->getMessage() : ERROR_GENERIC
+    ];
 }
 
-/**
- * Maneja la recuperación de contraseña (solicitud de token)
- */
-function handlePasswordRecovery()
-{
-    global $usuarioModel;
-
-    // Verificar solicitud POST
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('HTTP/1.1 405 Method Not Allowed');
-        exit('Método no permitido');
-    }
-
-    // Validar email
-    if (!isset($_POST['email']) || empty($_POST['email'])) {
-        $response = [
-            'status' => 'error',
-            'message' => 'El correo electrónico es obligatorio'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
-
-    if (!$email) {
-        $response = [
-            'status' => 'error',
-            'message' => 'El correo electrónico no es válido'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    try {
-        // Generar token de recuperación
-        $result = $usuarioModel->generarTokenRecuperacion($email);
-
-        if ($result['status'] === 'success') {
-            // En un entorno real, aquí enviaríamos el email con el enlace de recuperación
-            // Por ahora, solo simulamos que lo hemos enviado
-
-            $response = [
-                'status' => 'success',
-                'message' => 'Se ha enviado un correo con instrucciones para restablecer su contraseña'
-            ];
-        } else {
-            // Por seguridad, no indicamos si el email existe o no
-            $response = [
-                'status' => 'success',
-                'message' => 'Si el correo existe en nuestra base de datos, recibirá instrucciones para restablecer su contraseña'
-            ];
-        }
-
-        echo json_encode($response);
-
-    } catch (Exception $e) {
-        $response = [
-            'status' => 'error',
-            'message' => 'Error al procesar la solicitud'
-        ];
-        echo json_encode($response);
-    }
+// Asegurar que no haya salida adicional
+while (ob_get_level() > 0) {
+    ob_end_clean();
 }
 
-/**
- * Maneja el restablecimiento de contraseña con token
- */
-function handlePasswordReset()
-{
-    global $usuarioModel;
-
-    // Verificar solicitud POST
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('HTTP/1.1 405 Method Not Allowed');
-        exit('Método no permitido');
-    }
-
-    // Validar datos recibidos
-    if (!isset($_POST['token']) || !isset($_POST['password']) || !isset($_POST['confirmar_password'])) {
-        $response = [
-            'status' => 'error',
-            'message' => 'Todos los campos son obligatorios'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    $token = $_POST['token'];
-    $password = $_POST['password'];
-    $confirmarPassword = $_POST['confirmar_password'];
-
-    // Validar contraseña
-    if (strlen($password) < PASSWORD_MIN_LENGTH) {
-        $response = [
-            'status' => 'error',
-            'message' => 'La contraseña debe tener al menos ' . PASSWORD_MIN_LENGTH . ' caracteres'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    if ($password !== $confirmarPassword) {
-        $response = [
-            'status' => 'error',
-            'message' => 'Las contraseñas no coinciden'
-        ];
-        echo json_encode($response);
-        return;
-    }
-
-    try {
-        // Verificar token y cambiar contraseña
-        $result = $usuarioModel->cambiarPassword($token, $password);
-
-        if ($result['status'] === 'success') {
-            $response = [
-                'status' => 'success',
-                'message' => 'Contraseña actualizada correctamente',
-                'redirect' => BASE_URL . 'views/login.php'
-            ];
-        } else {
-            $response = [
-                'status' => 'error',
-                'message' => $result['message']
-            ];
-        }
-
-        echo json_encode($response);
-
-    } catch (Exception $e) {
-        $response = [
-            'status' => 'error',
-            'message' => 'Error al procesar la solicitud: ' . $e->getMessage()
-        ];
-        echo json_encode($response);
-    }
+// Si es una petición AJAX, enviar respuesta JSON
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    header('Content-Type: application/json');
+    echo json_encode($response);
+} else if (!empty($response['redirect'])) {
+    header('Location: ' . $response['redirect']);
 }
-
-/**
- * Maneja el cierre de sesión
- */
-function handleLogout()
-{
-    // Destruir todas las variables de sesión
-    $_SESSION = [];
-
-    // Destruir la cookie de sesión
-    if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(
-            session_name(),
-            '',
-            time() - 42000,
-            $params["path"],
-            $params["domain"],
-            $params["secure"],
-            $params["httponly"]
-        );
-    }
-
-    // Destruir la sesión
-    session_destroy();
-
-    // Redireccionar a la página de inicio
-    if (!isset($_GET['ajax'])) {
-        header("Location: " . BASE_URL);
-        exit;
-    } else {
-        $response = [
-            'status' => 'success',
-            'message' => 'Sesión cerrada correctamente',
-            'redirect' => BASE_URL
-        ];
-        echo json_encode($response);
-    }
-}
-
-/**
- * Función auxiliar para obtener conexión a base de datos
- */
-function getDbConnection()
-{
-    static $pdo = null;
-
-    if ($pdo === null) {
-        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
-        $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false
-        ];
-
-        try {
-            $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
-        } catch (PDOException $e) {
-            error_log("Error de conexión a la base de datos: " . $e->getMessage());
-            throw new Exception(ERROR_DB_CONNECTION);
-        }
-    }
-
-    return $pdo;
-}
+exit;

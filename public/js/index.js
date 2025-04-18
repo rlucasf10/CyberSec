@@ -1,5 +1,11 @@
+/**
+ * CyberSec - Scripts específicos de la página de inicio
+ */
+
 // Esperar a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function () {
+  'use strict'
+
   // Inicializar preloader
   initPreloader()
 
@@ -20,6 +26,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Inicializar efectos hover en servicios
   initServiceHoverEffects()
+
+  // Inicialización de AOS
+  if (typeof AOS !== 'undefined') {
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true,
+      mirror: false
+    })
+  }
 })
 
 // Preloader
@@ -230,16 +246,6 @@ function initParticles () {
 
 // Efectos de scroll
 function initScrollEffects () {
-  // Inicializar AOS (Animate On Scroll)
-  if (typeof AOS !== 'undefined') {
-    AOS.init({
-      duration: 800,
-      easing: 'ease-in-out',
-      once: true,
-      mirror: false
-    })
-  }
-
   // Cambiar la opacidad de elementos al hacer scroll
   const scrollIndicator = document.querySelector('.scroll-indicator')
 
@@ -389,3 +395,14 @@ if (typeof AOS === 'undefined') {
       console.error('Error loading AOS:', error)
     })
 }
+
+// Eliminar preloader cuando todo esté cargado
+window.addEventListener('load', function () {
+  const preloader = document.getElementById('preloader')
+  if (preloader) {
+    preloader.classList.add('preloader-hide')
+    setTimeout(function () {
+      preloader.style.display = 'none'
+    }, 500)
+  }
+})
