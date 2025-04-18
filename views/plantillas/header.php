@@ -43,7 +43,7 @@ $version = time();
         <div class="container">
             <nav class="navbar navbar-expand-lg">
                 <!-- Logo con efecto glow -->
-                <a class="navbar-brand" href="<?php echo BASE_URL; ?>">
+                <a class="navbar-brand" href="<?php echo BASE_URL; ?>public/index">
                     <i class="fas fa-shield-alt"></i>
                     <?php echo APP_NAME; ?>
                 </a>
@@ -59,7 +59,7 @@ $version = time();
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <a class="nav-link <?php echo $current_page === 'index' ? 'active' : ''; ?>"
-                                href="<?php echo BASE_URL; ?>">
+                                href="<?php echo BASE_URL; ?>public/index">
                                 <i class="fas fa-home me-1"></i>Inicio
                             </a>
                         </li>
@@ -133,6 +133,10 @@ $version = time();
                                                 <i class="fas fa-user-edit me-2"></i>Mi Perfil
                                             </a></li>
                                         <li><a class="dropdown-item"
+                                                href="<?php echo BASE_URL; ?>views/panel/<?php echo $_SESSION['user_type']; ?>/dashboard.php">
+                                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                            </a></li>
+                                        <li><a class="dropdown-item"
                                                 href="<?php echo BASE_URL; ?>views/panel/proyectos.php">
                                                 <i class="fas fa-project-diagram me-2"></i>Mis Proyectos
                                             </a></li>
@@ -147,11 +151,11 @@ $version = time();
                                 </div>
                             <?php else: ?>
                                 <a class="btn btn-outline-primary cyber-glow-effect"
-                                    href="<?php echo BASE_URL; ?>public/login.php">
+                                    href="<?php echo BASE_URL; ?>public/login">
                                     <i class="fas fa-sign-in-alt me-1"></i>Login
                                 </a>
                                 <a class="btn btn-primary cyber-glow-effect ms-2"
-                                    href="<?php echo BASE_URL; ?>public/registro.php">
+                                    href="<?php echo BASE_URL; ?>public/registro">
                                     <i class="fas fa-user-plus me-1"></i>Registro
                                 </a>
                             <?php endif; ?>

@@ -4,7 +4,7 @@ if (!defined('ACCESO_PERMITIDO')) {
     header('HTTP/1.1 403 Forbidden');
     exit('Acceso directo no permitido');
 }
-
+require_once __DIR__ . '/../config/database.php'; 
 class Usuario
 {
     private $db;
