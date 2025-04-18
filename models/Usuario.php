@@ -64,8 +64,10 @@ class Usuario
 
     /**
      * Obtiene un usuario por su email
+     * @param string $email
+     * @return array|null Retorna el usuario si existe, null si no existe
      */
-    public function obtenerPorEmail($email)
+    public function obtenerPorEmail($email): ?array
     {
         $sql = "SELECT * FROM usuarios WHERE email = ?";
         return $this->db->fetchOne($sql, [$email]);
