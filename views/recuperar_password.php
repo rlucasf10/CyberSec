@@ -1,9 +1,4 @@
 <?php
-// Iniciar sesión si no está iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 // Definir la constante de acceso
 define('ACCESO_PERMITIDO', true);
 

@@ -1,0 +1,194 @@
+/* Variables globales (consistentes con dashboard.css) */
+:root {
+  --primary-color: #4e73df;
+  --secondary-color: #858796;
+  --success-color: #1cc88a;
+  --info-color: #36b9cc;
+  --warning-color: #f6c23e;
+  --danger-color: #e74a3b;
+  --light-color: #f8f9fc;
+  --dark-color: #5a5c69;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos del contenedor principal */
+.container-fluid {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Estilos de las tarjetas */
+.card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 0.15rem 1.75rem rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.5rem;
+  border: none;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+  background: transparent;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Estilos de los formularios */
+.form-control {
+  border-radius: 0.5rem;
+  border: 1px solid #e3e6f0;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.form-control:disabled {
+  background-color: #f8f9fc;
+  cursor: not-allowed;
+}
+
+/* Estilos de los botones */
+.btn {
+  border-radius: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #224abe;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+}
+
+.btn-secondary {
+  background: var(--secondary-color);
+  border: none;
+}
+
+/* Estilos para el sidebar del perfil */
+.sidebar-profile {
+  animation: fadeIn 0.7s ease-out;
+}
+
+/* Estilos para los iconos */
+.fa-user-circle {
+  color: var(--primary-color);
+}
+
+/* Estilos para las etiquetas */
+.form-label {
+  font-weight: 600;
+  color: var(--dark-color);
+  margin-bottom: 0.5rem;
+}
+
+/* Estilos para el indicador de contraseña */
+.password-strength {
+  margin-top: 0.5rem;
+}
+
+.progress {
+  height: 4px !important;
+  border-radius: 2px;
+  background-color: #e3e6f0;
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+}
+
+/* Estilos para las notificaciones */
+.form-check-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Estilos para el selector de idioma */
+.form-select {
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: white;
+  border: 1px solid #e3e6f0;
+  cursor: pointer;
+}
+
+/* Efectos hover para elementos interactivos */
+.card-header button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .d-flex {
+    flex-direction: column;
+  }
+}
+
+/* Animaciones para estados de carga */
+.loading {
+  position: relative;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}

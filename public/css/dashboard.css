@@ -1,0 +1,169 @@
+/* Variables globales */
+:root {
+  --primary-color: #4e73df;
+  --secondary-color: #858796;
+  --success-color: #1cc88a;
+  --info-color: #36b9cc;
+  --warning-color: #f6c23e;
+  --danger-color: #e74a3b;
+  --dark-color: #5a5c69;
+  --light-color: #f8f9fc;
+}
+
+/* Layout principal */
+.dashboard-container {
+  display: flex;
+  padding: 2rem;
+  background-color: var(--light-color);
+}
+
+/* Tarjetas de estadísticas */
+.stat-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 0.15rem 1.75rem rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+}
+
+.stat-card .icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat-card .title {
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card .value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--dark-color);
+  margin-bottom: 0;
+}
+
+/* Gráficos y tablas */
+.chart-card,
+.table-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 0.15rem 1.75rem rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
+}
+
+.chart-card .card-header,
+.table-card .card-header {
+  background: transparent;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+.chart-card .card-body,
+.table-card .card-body {
+  padding: 1.5rem;
+}
+
+/* Tablas personalizadas */
+.custom-table {
+  width: 100%;
+}
+
+.custom-table th {
+  background-color: var(--light-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  padding: 1rem;
+  border-bottom: 2px solid #e3e6f0;
+}
+
+.custom-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+/* Badges y estados */
+.badge {
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.badge-success {
+  background-color: rgba(28, 200, 138, 0.1);
+  color: var(--success-color);
+}
+
+.badge-warning {
+  background-color: rgba(246, 194, 62, 0.1);
+  color: var(--warning-color);
+}
+
+.badge-danger {
+  background-color: rgba(231, 74, 59, 0.1);
+  color: var(--danger-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .stat-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Animaciones */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loader */
+.loader {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

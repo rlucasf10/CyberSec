@@ -4,20 +4,21 @@ if (!defined('SESSION_TIMEOUT') || !defined('DEBUG_MODE')) {
     exit('Error en la configuración del sistema.');
 }
 
-// Configuración de sesión (DEBE IR ANTES DE INICIAR LA SESIÓN)
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
-ini_set('session.cookie_samesite', 'Lax');
-ini_set('session.gc_maxlifetime', SESSION_TIMEOUT);
-
 // Mantener el control del buffer de salida
 if (ob_get_level() == 0) {
     ob_start();
 }
 
-// Iniciar sesión si no está iniciada
+// Configurar las opciones de sesión antes de iniciarla
 if (session_status() === PHP_SESSION_NONE) {
+    // Configuración de seguridad de la sesión
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_only_cookies', 1);
+    ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
+    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.gc_maxlifetime', SESSION_TIMEOUT);
+
+    // Ahora sí podemos iniciar la sesión
     session_start();
 }
 
