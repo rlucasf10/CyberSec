@@ -96,7 +96,7 @@ class Usuario
     /**
      * Valida la fortaleza de la contraseña
      */
-    private function validarPassword($password)
+    public function validarPassword($password)
     {
         if (strlen($password) < 10) {
             throw new Exception("La contraseña debe tener al menos 10 caracteres");

@@ -157,13 +157,20 @@ document.addEventListener('DOMContentLoaded', function () {
   if (formPassword) {
     formPassword.addEventListener('submit', function (e) {
       e.preventDefault()
+      console.log('1. Iniciando cambio de contraseña')
 
+      const passwordActual =
+        formPassword.querySelector('#password_actual')?.value
       const passwordNuevo = formPassword.querySelector('#password_nuevo')?.value
       const passwordConfirmar = formPassword.querySelector(
         '#password_confirmar'
       )?.value
 
-      if (!passwordNuevo || !passwordConfirmar) {
+      // Log de la URL y formulario
+      console.log('2. URL del formulario:', formPassword.action)
+      console.log('3. Método del formulario:', formPassword.method)
+
+      if (!passwordActual || !passwordNuevo || !passwordConfirmar) {
         mostrarNotificacion('Por favor, complete todos los campos', 'error')
         return
       }
@@ -173,12 +180,44 @@ document.addEventListener('DOMContentLoaded', function () {
         return
       }
 
+      const formData = new FormData(formPassword)
+      console.log('4. Datos del formulario:')
+      for (let [key, value] of formData.entries()) {
+        // No mostrar las contraseñas en el log, solo los nombres de los campos
+        console.log(`   Campo: ${key}`)
+      }
+
       fetch(formPassword.action, {
         method: 'POST',
-        body: new FormData(formPassword)
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
       })
-        .then(response => response.json())
+        .then(response => {
+          console.log('5. Estado de la respuesta:', response.status)
+          console.log('6. Headers de la respuesta:', {
+            contentType: response.headers.get('content-type'),
+            location: response.headers.get('location')
+          })
+
+          return response.text().then(text => {
+            console.log('7. Respuesta del servidor:', text)
+            if (!response.ok) {
+              throw new Error(
+                `Error HTTP: ${response.status}. Respuesta: ${text}`
+              )
+            }
+            try {
+              return JSON.parse(text)
+            } catch (e) {
+              console.error('8. Error al parsear JSON:', e)
+              throw new Error('La respuesta no es JSON válido')
+            }
+          })
+        })
         .then(data => {
+          console.log('9. Datos procesados:', data)
           if (data.status === 'success') {
             mostrarNotificacion(
               'Contraseña actualizada correctamente',
@@ -193,8 +232,11 @@ document.addEventListener('DOMContentLoaded', function () {
           }
         })
         .catch(error => {
-          console.error('Error:', error)
-          mostrarNotificacion('Error al procesar la solicitud', 'error')
+          console.error('10. Error completo:', error)
+          mostrarNotificacion(
+            'Error al procesar la solicitud: ' + error.message,
+            'error'
+          )
         })
     })
   }

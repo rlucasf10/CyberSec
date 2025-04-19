@@ -142,7 +142,8 @@ $userData = $usuario->obtenerPorEmail($_SESSION['user_email']);
                 <h4 class="title mb-4">
                     <i class="fas fa-key me-2"></i>Cambiar Contraseña
                 </h4>
-                <form id="formPassword" method="post" action="<?php echo BASE_URL; ?>controllers/usuario_controller.php"
+                <form id="formPassword" method="post"
+                    action="<?php echo BASE_URL; ?>controllers/auth_controller.php?action=cambiar_password"
                     class="password-form needs-validation" novalidate>
                     <input type="hidden" name="action" value="cambiar_password">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION[CSRF_TOKEN_NAME]; ?>">

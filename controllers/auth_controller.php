@@ -229,7 +229,7 @@ try {
                 }
 
                 $userId = filter_input(INPUT_POST, 'user_id', FILTER_VALIDATE_INT);
-                
+
                 if (!$userId || $userId != $_SESSION['user_id']) {
                     throw new Exception('ID de usuario no válido');
                 }
@@ -249,7 +249,7 @@ try {
                 }
 
                 $response = $usuario->actualizarPerfil($userId, $datosActualizacion);
-                
+
                 if ($response['status'] === 'success') {
                     $_SESSION['user_name'] = $datosActualizacion['nombre'] ?? $_SESSION['user_name'];
                 }
@@ -277,6 +277,56 @@ try {
                 $response = [
                     'status' => 'error',
                     'message' => 'Error al procesar la solicitud'
+                ];
+            }
+            break;
+
+        case 'cambiar_contraseña':
+            try {
+                if (!isset($_SESSION['user_id'])) {
+                    throw new Exception('Usuario no autenticado');
+                }
+
+                $password_actual = $_POST['password_actual'] ?? '';
+                $password_nuevo = $_POST['password_nuevo'] ?? '';
+                $password_confirmar = $_POST['password_confirmar'] ?? '';
+
+                if (!$password_actual || !$password_nuevo || !$password_confirmar) {
+                    throw new Exception('Todos los campos son requeridos');
+                }
+
+                if ($password_nuevo !== $password_confirmar) {
+                    throw new Exception('Las contraseñas no coinciden');
+                }
+
+                // Obtener usuario actual
+                $userData = $usuario->obtenerPorEmail($_SESSION['user_email']);
+                if (!$userData) {
+                    throw new Exception('Usuario no encontrado');
+                }
+
+                // Verificar contraseña actual
+                $password_actual_hash = hash('sha256', $password_actual . $userData['salt']);
+                if ($password_actual_hash !== $userData['password_hash']) {
+                    throw new Exception('La contraseña actual es incorrecta');
+                }
+
+                // Validar nueva contraseña
+                $usuario->validarPassword($password_nuevo);
+
+                // Generar nuevo salt y hash
+                $new_salt = bin2hex(random_bytes(32));
+                $new_password_hash = hash('sha256', $password_nuevo . $new_salt);
+
+                // Cambiar la contraseña
+                $resultado = $usuario->cambiarPassword($userData['id'], $new_password_hash, $new_salt);
+
+                $response = $resultado;
+            } catch (Exception $e) {
+                error_log("Error al cambiar contraseña: " . $e->getMessage());
+                $response = [
+                    'status' => 'error',
+                    'message' => $e->getMessage()
                 ];
             }
             break;
