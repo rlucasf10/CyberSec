@@ -7,6 +7,26 @@ document.addEventListener('DOMContentLoaded', function () {
   const formPassword = document.getElementById('formPassword')
   const formPreferencias = document.getElementById('formPreferencias')
 
+  // Funcionalidad de mostrar/ocultar contraseña
+  const togglePasswordButtons = document.querySelectorAll('.toggle-password')
+  togglePasswordButtons.forEach(button => {
+    button.addEventListener('click', function () {
+      const input = this.previousElementSibling
+      const icon = this.querySelector('i')
+
+      // Cambiar el tipo de input
+      if (input.type === 'password') {
+        input.type = 'text'
+        icon.classList.remove('fa-eye')
+        icon.classList.add('fa-eye-slash')
+      } else {
+        input.type = 'password'
+        icon.classList.remove('fa-eye-slash')
+        icon.classList.add('fa-eye')
+      }
+    })
+  })
+
   // Solo proceder si el formulario de perfil existe
   if (formPerfil) {
     // Campos editables - incluir todos los tipos de campos necesarios
