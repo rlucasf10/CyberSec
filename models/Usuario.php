@@ -4,7 +4,7 @@ if (!defined('ACCESO_PERMITIDO')) {
     header('HTTP/1.1 403 Forbidden');
     exit('Acceso directo no permitido');
 }
-require_once __DIR__ . '/../config/database.php'; 
+require_once __DIR__ . '/../config/database.php';
 class Usuario
 {
     private $db;
@@ -16,6 +16,8 @@ class Usuario
 
     /**
      * Registra un nuevo usuario en el sistema
+     * @param array $datos Datos del usuario a registrar
+     * @return array Resultado de la operación
      */
     public function registrar($datos)
     {
@@ -55,10 +57,17 @@ class Usuario
             $this->db->query($sql, $params);
             $this->db->commit();
 
-            return true;
+            return [
+                'status' => 'success',
+                'message' => 'Usuario registrado correctamente'
+            ];
+
         } catch (Exception $e) {
             $this->db->rollBack();
-            throw $e;
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
         }
     }
 
@@ -333,6 +342,121 @@ class Usuario
             return [
                 'status' => 'error',
                 'message' => 'Error al limpiar el token de recuerdo'
+            ];
+        }
+    }
+
+    /**
+     * Cierra la cuenta de un usuario
+     * @param int $userId ID del usuario
+     * @return array Resultado de la operación
+     */
+    public function cerrarCuenta($userId)
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // Primero verificamos si el usuario existe y está activo
+            $sql = "SELECT estado FROM usuarios WHERE id = ?";
+            $usuario = $this->db->fetchOne($sql, [$userId]);
+
+            if (!$usuario) {
+                throw new Exception("Usuario no encontrado");
+            }
+
+            if ($usuario['estado'] !== 'activo') {
+                throw new Exception("La cuenta ya está desactivada");
+            }
+
+            // Actualizamos el estado del usuario a 'inactivo' y anonimizamos sus datos
+            $sql = "UPDATE usuarios SET 
+                    estado = 'inactivo',
+                    nombre = 'Usuario Eliminado',
+                    apellidos = 'Usuario Eliminado',
+                    telefono = NULL,
+                    direccion = NULL,
+                    empresa = NULL,
+                    especialidad = NULL,
+                    remember_token = NULL,
+                    token_expiry = NULL,
+                    token_recuperacion = NULL,
+                    fecha_token = NULL,
+                    actualizado = NOW()
+                    WHERE id = ?";
+
+            $this->db->query($sql, [$userId]);
+
+            // Comprometer la transacción
+            $this->db->commit();
+
+            return [
+                'status' => 'success',
+                'message' => 'Cuenta cerrada correctamente'
+            ];
+
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Error al cerrar cuenta: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => 'Error al cerrar la cuenta: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Actualiza los datos del perfil de un usuario
+     * @param int $userId ID del usuario
+     * @param array $datos Datos a actualizar
+     * @return array Resultado de la operación
+     */
+    public function actualizarPerfil($userId, $datos)
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // Verificar si el email ha cambiado y si está disponible
+            if (isset($datos['email'])) {
+                $usuarioExistente = $this->obtenerPorEmail($datos['email']);
+                if ($usuarioExistente && $usuarioExistente['id'] != $userId) {
+                    throw new Exception("El correo electrónico ya está registrado por otro usuario");
+                }
+            }
+
+            // Construir la consulta SQL dinámicamente
+            $campos = [];
+            $valores = [];
+            $camposPermitidos = ['nombre', 'apellidos', 'email', 'telefono', 'direccion', 'empresa', 'especialidad'];
+
+            foreach ($camposPermitidos as $campo) {
+                if (isset($datos[$campo])) {
+                    $campos[] = "$campo = ?";
+                    $valores[] = $datos[$campo];
+                }
+            }
+
+            if (empty($campos)) {
+                throw new Exception("No hay datos para actualizar");
+            }
+
+            $valores[] = $userId; // Añadir el ID para la cláusula WHERE
+
+            $sql = "UPDATE usuarios SET " . implode(", ", $campos) . ", actualizado = NOW() WHERE id = ?";
+
+            $this->db->query($sql, $valores);
+            $this->db->commit();
+
+            return [
+                'status' => 'success',
+                'message' => 'Perfil actualizado correctamente'
+            ];
+
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log("Error al actualizar perfil: " . $e->getMessage());
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
             ];
         }
     }

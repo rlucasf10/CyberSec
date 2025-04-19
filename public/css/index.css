@@ -1135,3 +1135,31 @@ body {
 .alert-link:hover {
   color: #63b3ed;
 }
+
+/* Estilos para modales y alertas */
+.swal2-popup {
+  background-color: #ffffff !important;
+}
+
+.swal2-title,
+.swal2-html-container,
+.modal-title,
+.modal-body {
+  color: #333333 !important;
+}
+
+.swal2-confirm,
+.swal2-cancel {
+  color: #ffffff !important;
+}
+
+.alert-danger {
+  color: #721c24 !important;
+  background-color: #f8d7da !important;
+  border-color: #f5c6cb !important;
+}
+
+.form-check-label,
+.text-muted {
+  color: #666666 !important;
+}

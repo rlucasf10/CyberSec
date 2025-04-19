@@ -51,7 +51,7 @@ require_once BASE_PATH . '/views/plantillas/header.php';
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                                 <input type="email" class="form-control" id="email" name="email"
-                                    placeholder="ejemplo@dominio.com" required>
+                                    placeholder="ejemplo@dominio.com" required autocomplete="username">
                             </div>
                             <div class="invalid-feedback">Por favor ingrese un correo electrónico válido.</div>
                         </div>
@@ -62,7 +62,7 @@ require_once BASE_PATH . '/views/plantillas/header.php';
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
                                 <input type="password" class="form-control" id="password" name="password"
-                                    placeholder="••••••••" required>
+                                    placeholder="••••••••" required autocomplete="current-password">
                                 <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
                                     <i class="fas fa-eye"></i>
                                 </button>

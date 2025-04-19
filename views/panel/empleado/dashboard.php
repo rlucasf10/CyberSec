@@ -13,6 +13,9 @@ $page_title = "Panel de Empleado";
 require_once BASE_PATH . '/views/plantillas/header.php';
 ?>
 
+<!-- Estilos específicos -->
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>public/css/dashboard.css">
+
 <!-- Botón de menú móvil -->
 <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
     aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,9 +67,15 @@ require_once BASE_PATH . '/views/plantillas/header.php';
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Dashboard de Empleado</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-file-export me-1"></i>
+                        Exportar Informe
+                    </button>
+                </div>
             </div>
 
-            <!-- Tarjetas de resumen -->
+            <!-- Tarjetas de estadísticas -->
             <div class="row">
                 <div class="col-xl-3 col-md-6 mb-4">
                     <div class="card border-left-primary shadow h-100 py-2">
@@ -146,7 +155,7 @@ require_once BASE_PATH . '/views/plantillas/header.php';
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-bordered">
+                                <table class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>Proyecto</th>
@@ -160,6 +169,35 @@ require_once BASE_PATH . '/views/plantillas/header.php';
                                         <!-- Aquí se cargarán las tareas dinámicamente -->
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="row">
+                <div class="col-xl-8 col-lg-7">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Distribución de Tiempo por Proyecto</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="tiempoProyectosChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-lg-5">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Vulnerabilidades por Tipo</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-pie">
+                                <canvas id="tiposVulnerabilidadesChart"></canvas>
                             </div>
                         </div>
                     </div>

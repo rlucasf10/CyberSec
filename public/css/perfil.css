@@ -1,194 +1,125 @@
-/* Variables globales (consistentes con dashboard.css) */
-:root {
-  --primary-color: #4e73df;
-  --secondary-color: #858796;
-  --success-color: #1cc88a;
-  --info-color: #36b9cc;
-  --warning-color: #f6c23e;
-  --danger-color: #e74a3b;
-  --light-color: #f8f9fc;
-  --dark-color: #5a5c69;
+/* Estilos específicos del perfil */
+
+/* Contenedor del perfil */
+#profile-wrapper .profile-info,
+#profile-wrapper .profile-password,
+#profile-wrapper .profile-summary,
+#profile-wrapper .quick-actions {
+  border-radius: var(--border-radius-lg);
+  transition: transform 0.3s ease;
 }
 
-/* Animaciones */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Estilos del contenedor principal */
-.container-fluid {
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* Estilos de las tarjetas */
-.card {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 0.15rem 1.75rem rgba(0, 0, 0, 0.03);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin-bottom: 1.5rem;
-  border: none;
-}
-
-.card:hover {
+#profile-wrapper .profile-info:hover,
+#profile-wrapper .profile-password:hover,
+#profile-wrapper .profile-summary:hover,
+#profile-wrapper .quick-actions:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
 }
 
-.card-header {
-  background: transparent;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e3e6f0;
+/* Estilos específicos para el formulario de perfil */
+#profile-wrapper .profile-form .input-group-text {
+  background-color: var(--dark-secondary);
+  border-color: rgba(51, 255, 153, 0.2);
+  color: var(--secondary-color);
 }
 
-.card-body {
-  padding: 1.5rem;
+#profile-wrapper .profile-form .form-control:disabled + .input-group-text {
+  opacity: 0.7;
 }
 
-/* Estilos de los formularios */
-.form-control {
-  border-radius: 0.5rem;
-  border: 1px solid #e3e6f0;
-  padding: 0.75rem 1rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.form-control:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
-}
-
-.form-control:disabled {
-  background-color: #f8f9fc;
-  cursor: not-allowed;
-}
-
-/* Estilos de los botones */
-.btn {
-  border-radius: 0.5rem;
-  padding: 0.5rem 1.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background: var(--primary-color);
-  border: none;
-}
-
-.btn-primary:hover {
-  background: #224abe;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
-}
-
-.btn-secondary {
-  background: var(--secondary-color);
-  border: none;
-}
-
-/* Estilos para el sidebar del perfil */
-.sidebar-profile {
-  animation: fadeIn 0.7s ease-out;
-}
-
-/* Estilos para los iconos */
-.fa-user-circle {
-  color: var(--primary-color);
-}
-
-/* Estilos para las etiquetas */
-.form-label {
-  font-weight: 600;
-  color: var(--dark-color);
-  margin-bottom: 0.5rem;
-}
-
-/* Estilos para el indicador de contraseña */
-.password-strength {
+/* Indicador de fortaleza de contraseña */
+#change-password .password-strength {
   margin-top: 0.5rem;
 }
 
-.progress {
-  height: 4px !important;
-  border-radius: 2px;
-  background-color: #e3e6f0;
+#change-password .password-strength .progress {
+  height: 4px;
+  background-color: var(--dark-secondary);
+  border-radius: var(--border-radius);
+  overflow: hidden;
 }
 
-.progress-bar {
+#change-password .password-strength .progress-bar {
   transition: width 0.3s ease;
+  background: linear-gradient(
+    90deg,
+    var(--secondary-color),
+    var(--primary-light)
+  );
 }
 
-/* Estilos para las notificaciones */
-.form-check-input:checked {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+#change-password .password-requirements {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
-/* Estilos para el selector de idioma */
-.form-select {
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  background-color: white;
-  border: 1px solid #e3e6f0;
-  cursor: pointer;
+#change-password .password-requirements .requirement {
+  margin-bottom: 0.25rem;
+  transition: color 0.3s ease;
 }
 
-/* Efectos hover para elementos interactivos */
-.card-header button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+#change-password .password-requirements .requirement i {
+  font-size: 0.7rem;
+  margin-right: 0.5rem;
+  transition: color 0.3s ease;
 }
 
-/* Estilos para dispositivos móviles */
-@media (max-width: 768px) {
-  .card {
-    margin-bottom: 1rem;
-  }
-
-  .btn {
-    width: 100%;
-    margin-bottom: 0.5rem;
-  }
-
-  .d-flex {
-    flex-direction: column;
-  }
+#change-password .password-requirements .requirement.valid {
+  color: var(--secondary-color);
 }
 
-/* Animaciones para estados de carga */
-.loading {
-  position: relative;
+#change-password .password-requirements .requirement.invalid {
+  color: var(--text-muted);
+}
+
+/* Iconos específicos del perfil */
+#profile-wrapper .profile-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  background: rgba(51, 255, 153, 0.1);
+  color: var(--secondary-color);
+  margin-right: 1rem;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+#profile-wrapper .profile-stat:hover .profile-icon {
+  transform: scale(1.1);
+  background: rgba(51, 255, 153, 0.2);
+}
+
+/* Estilos específicos para los botones de mostrar contraseña */
+#profile-wrapper .toggle-password {
+  border-left: none;
+  background-color: var(--dark-secondary);
+  border-color: rgba(51, 255, 153, 0.2);
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+#profile-wrapper .toggle-password:hover {
+  color: var(--secondary-color);
+  background-color: rgba(51, 255, 153, 0.1);
+}
+
+/* Estilos específicos para las estadísticas */
+#activity-summary .profile-stat {
+  transition: transform 0.3s ease;
+}
+
+#activity-summary .profile-stat:hover {
+  transform: translateX(5px);
+}
+
+/* Sobrescribir la clase text-muted de Bootstrap específicamente en el perfil */
+#profile-wrapper .text-muted,
+#activity-summary .text-muted {
+  --bs-text-opacity: 1;
+  color: var(--text-color) !important;
   opacity: 0.7;
-  pointer-events: none;
-}
-
-.loading::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 2rem;
-  height: 2rem;
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid var(--primary-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  transform: translate(-50%, -50%);
-}
-
-@keyframes spin {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
 }

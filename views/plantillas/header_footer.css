@@ -748,3 +748,44 @@ img {
     padding: 0 1rem;
   }
 }
+
+/* Estilos globales para SweetAlert2 */
+.swal2-popup {
+  background-color: #ffffff !important;
+}
+
+.swal2-title {
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+}
+
+.swal2-html-container {
+  color: #333333 !important;
+  font-weight: 500 !important;
+}
+
+.swal2-confirm,
+.swal2-cancel {
+  color: #ffffff !important;
+}
+
+.swal2-validation-message {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+}
+
+/* Estilos específicos para el modal de cierre de cuenta */
+#closeAccountModal .modal-title,
+#closeAccountModal .alert-danger strong,
+#closeAccountModal p {
+  color: #333333 !important;
+  font-weight: 500;
+}
+
+#closeAccountModal .form-check-label {
+  color: #333333 !important;
+}
+
+#closeAccountModal ul.text-muted {
+  color: #666666 !important;
+}

@@ -86,6 +86,8 @@ require_once dirname(__DIR__) . '/views/plantillas/header.php';
 
                             <input type="hidden" name="csrf_token" value="<?php echo $_SESSION[CSRF_TOKEN_NAME]; ?>">
                             <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                            <input type="hidden" name="username" value="" id="password_username" aria-hidden="true"
+                                autocomplete="username">
 
                             <div class="form-group mb-4">
                                 <label for="password" class="form-label">Nueva Contraseña</label>

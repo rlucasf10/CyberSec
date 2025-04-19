@@ -20,6 +20,9 @@ $version = time();
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
+        <!-- Icono de la página -->
+    <link rel="icon" type="image/x-icon" href="<?php echo BASE_URL; ?>/public/img/favicon.png"
+
     <!-- Título dinámico de la página -->
     <title><?php echo isset($page_title) ? $page_title . ' | ' . APP_NAME : APP_NAME . ' - Ciberseguridad'; ?></title>
 

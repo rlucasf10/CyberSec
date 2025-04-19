@@ -13,6 +13,9 @@ $page_title = "Panel de Cliente";
 require_once BASE_PATH . '/views/plantillas/header.php';
 ?>
 
+<!-- Estilos específicos -->
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>public/css/dashboard.css">
+
 <!-- Botón de menú móvil -->
 <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"
     aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,6 +67,16 @@ require_once BASE_PATH . '/views/plantillas/header.php';
             <div
                 class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2">Dashboard de Cliente</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="nuevo-proyecto.php" class="btn btn-sm btn-primary me-2">
+                        <i class="fas fa-plus me-1"></i>
+                        Nuevo Proyecto
+                    </a>
+                    <button type="button" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-download me-1"></i>
+                        Descargar Informe
+                    </button>
+                </div>
             </div>
 
             <!-- Resumen de proyectos y servicios -->
@@ -143,8 +156,9 @@ require_once BASE_PATH . '/views/plantillas/header.php';
                     <div class="card shadow mb-4">
                         <div class="card-header py-3 d-flex justify-content-between align-items-center">
                             <h6 class="m-0 font-weight-bold text-primary">Estado de Proyectos</h6>
-                            <button class="btn btn-sm btn-primary">
-                                <i class="fas fa-download fa-sm"></i> Generar Reporte
+                            <button class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download fa-sm me-1"></i>
+                                Generar Reporte
                             </button>
                         </div>
                         <div class="card-body">
@@ -169,16 +183,29 @@ require_once BASE_PATH . '/views/plantillas/header.php';
                 </div>
             </div>
 
-            <!-- Últimas Vulnerabilidades -->
+            <!-- Gráficos -->
             <div class="row">
-                <div class="col-12">
+                <div class="col-xl-8 col-lg-7">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Últimas Vulnerabilidades Detectadas</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Resumen de Actividad</h6>
                         </div>
                         <div class="card-body">
-                            <div class="timeline-vuln">
-                                <!-- Las vulnerabilidades se cargarán dinámicamente aquí -->
+                            <div class="chart-area">
+                                <canvas id="actividadChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-lg-5">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Distribución de Incidencias</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-pie">
+                                <canvas id="incidenciasChart"></canvas>
                             </div>
                         </div>
                     </div>

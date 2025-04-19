@@ -85,16 +85,62 @@ class Database
         return $this->connection;
     }
 
+    private function handleError($e, $customMessage = '')
+    {
+        error_log($customMessage . ": " . $e->getMessage());
+        error_log("Stack trace: " . $e->getTraceAsString());
+
+        // Verificar si es una petición AJAX
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+        if ($isAjax) {
+            // Limpiar cualquier salida anterior
+            while (ob_get_level()) {
+                ob_end_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            $response = [
+                'status' => 'error',
+                'message' => DEBUG_MODE ? $e->getMessage() : ERROR_GENERIC,
+                'sql_error' => DEBUG_MODE ? $customMessage : null
+            ];
+            error_log("Enviando respuesta JSON de error: " . json_encode($response));
+            echo json_encode($response);
+            exit;
+        }
+
+        throw new Exception(DEBUG_MODE ? $e->getMessage() : ERROR_GENERIC);
+    }
+
     // Ejecutar una consulta
     public function query($sql, $params = [])
     {
         try {
+            error_log("SQL Query - Preparando consulta: " . $sql);
+            error_log("SQL Params: " . print_r($params, true));
+
             $stmt = $this->connection->prepare($sql);
-            $stmt->execute($params);
+            if (!$stmt) {
+                error_log("SQL Error - Fallo al preparar la consulta");
+                throw new PDOException("Error al preparar la consulta");
+            }
+
+            $success = $stmt->execute($params);
+            if (!$success) {
+                $error = $stmt->errorInfo();
+                error_log("SQL Error - Fallo al ejecutar: " . print_r($error, true));
+                throw new PDOException("Error al ejecutar la consulta: " . ($error[2] ?? 'Error desconocido'));
+            }
+
+            error_log("SQL Success - Consulta ejecutada correctamente");
+            error_log("SQL Affected rows: " . $stmt->rowCount());
+
             return $stmt;
         } catch (PDOException $e) {
-            error_log("Error en la consulta: " . $e->getMessage());
-            throw new Exception(DEBUG_MODE ? "Error en la consulta: " . $e->getMessage() : ERROR_GENERIC);
+            error_log("SQL Exception: " . $e->getMessage());
+            error_log("SQL Trace: " . $e->getTraceAsString());
+            return $this->handleError($e, "Error en la consulta");
         }
     }
 
@@ -103,20 +149,19 @@ class Database
     {
         try {
             $stmt = $this->connection->prepare($sql);
-            
+
             if (!$stmt) {
                 throw new Exception("Error al preparar la consulta");
             }
-            
+
             if (!$stmt->execute($params)) {
                 $error = $stmt->errorInfo();
                 throw new Exception("Error al ejecutar la consulta: " . ($error[2] ?? 'Error desconocido'));
             }
-            
+
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error en consulta: " . $e->getMessage());
-            throw new Exception(DEBUG_MODE ? $e->getMessage() : "Error en la operación con la base de datos");
+            return $this->handleError($e, "Error en consulta fetchOne");
         }
     }
 
@@ -170,18 +215,18 @@ class Database
         try {
             $placeholders = str_repeat('?,', count($params) - 1) . '?';
             $sql = "CALL $procedure($placeholders)";
-            
+
             $stmt = $this->connection->prepare($sql);
-            
+
             if (!$stmt) {
                 throw new Exception("Error al preparar el procedimiento almacenado");
             }
-            
+
             if (!$stmt->execute($params)) {
                 $error = $stmt->errorInfo();
                 throw new Exception("Error al ejecutar el procedimiento: " . ($error[2] ?? 'Error desconocido'));
             }
-            
+
             return $stmt;
         } catch (PDOException $e) {
             error_log("Error en procedimiento almacenado: " . $e->getMessage());
